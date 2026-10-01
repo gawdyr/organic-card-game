@@ -332,50 +332,16 @@ function sectorDeck(){
 
 function setFlag(flag){if(flag)state.flags.add(flag);}
 
-let restoreGame=null;
-const minigame=document.getElementById('minigame'),restoreGrid=document.getElementById('restoreGrid'),restoreStatus=document.getElementById('restoreStatus');
-function startSystemRestore(){
-  locked=true; restoreGame={size:5,path:[],solved:false,usedValky:false};
-  const nodes=['POWER','A','B','C','CORE','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W'];
-  const shuffled=shuffle(nodes.slice(1)); const order=[nodes[0],...shuffled.slice(0,3),'CORE',...shuffled.slice(3)];
-  restoreGrid.innerHTML='';
-  order.forEach((name,i)=>{
-    const b=document.createElement('button'); b.className='restore-node '+(name==='POWER'?'power':name==='CORE'?'core':'');
-    b.textContent=name;b.dataset.name=name;b.dataset.index=i;
-    b.addEventListener('click',()=>restorePick(name,b));restoreGrid.appendChild(b);
-  });
-  restoreStatus.className='restore-status';restoreStatus.textContent='Select POWER to begin.';
-  minigame.classList.add('show');minigame.setAttribute('aria-hidden','false');
-}
-function restorePick(name,el){
-  if(!restoreGame||restoreGame.solved)return;
-  const path=restoreGame.path;
-  if(name==='POWER'&&path.length===0){path.push(name);el.classList.add('connected');restoreStatus.textContent='POWER online. Find the CORE path.';return}
-  if(path.length===0){restoreStatus.textContent='Start at POWER.';return}
-  if(name==='CORE'){
-    if(path.length>=4){path.push(name);el.classList.add('connected');restoreGame.solved=true;restoreStatus.className='restore-status good';restoreStatus.textContent='CORE restored. Shelter systems online.';setTimeout(()=>finishSystemRestore(true),650)}
-    else {restoreStatus.className='restore-status bad';restoreStatus.textContent='The path is incomplete. Reach the CORE after linking three nodes.'}
-    return;
-  }
-  if(name==='POWER'){return}
-  if(path.includes(name)){restoreStatus.className='restore-status bad';restoreStatus.textContent='That node is already linked.';return}
-  path.push(name);el.classList.add('connected');
-  restoreStatus.className='restore-status';restoreStatus.textContent=path.length>=4?'CORE is ready. Complete the connection.':'Node linked. Continue.';
-}
-function resetSystemRestore(){if(!restoreGame)return;restoreGame.path=[];restoreGame.solved=false;restoreGrid.querySelectorAll('.restore-node').forEach(x=>x.classList.remove('connected'));restoreStatus.className='restore-status';restoreStatus.textContent='Select POWER to begin.'}
-function finishSystemRestore(success,viaValky=false){
-  if(!restoreGame)return;
-  const used=viaValky||restoreGame.usedValky;
-  minigame.classList.remove('show');minigame.setAttribute('aria-hidden','true');restoreGame=null;
-  if(success){
-    state.survival=Math.min(5,state.survival+1);state.knowledge+=used?0:2;state.connection+=used?1:0;state.identity=Math.max(0,state.identity-(used?1:0));
-    renderStats();document.getElementById('log').textContent=used?'Valky restored the shelter before you touched the system.':'You restored the shelter manually. The system remembers that you did.';
-  }else{
-    state.survival=Math.max(0,state.survival-1);renderStats();document.getElementById('log').textContent='The shelter remains unstable. You lose precious time and supplies.';
-  }
-  setTimeout(()=>draw(),450);
-}
-
+let mazeGame=null;
+const minigame=document.getElementById("minigame"),mazeEl=document.getElementById("maze"),mazeStatus=document.getElementById("mazeStatus");
+function mazePath(size){const g=Array.from({length:size},()=>Array(size).fill(1)),stack=[[0,0]];g[0][0]=0;while(stack.length){const cur=stack[stack.length-1],r=cur[0],c=cur[1],dirs=shuffle([[2,0],[-2,0],[0,2],[0,-2]]);let moved=false;for(const d of dirs){const nr=r+d[0],nc=c+d[1];if(nr>0&&nr<size-1&&nc>0&&nc<size-1&&g[nr][nc]){g[r+d[0]/2][c+d[1]/2]=0;g[nr][nc]=0;stack.push([nr,nc]);moved=true;break}}if(!moved)stack.pop()}g[size-1][size-1]=0;return g}
+function startCoreMaze(){locked=true;const sizes=state.level===1?[9,11]:state.level===2?[11,13]:state.level===3?[13,15]:[15,17],size=sizes[Math.floor(Math.random()*sizes.length)];mazeGame={size,grid:mazePath(size),r:0,c:0,done:false};document.getElementById("mazeEyebrow").textContent="BETWEEN SECTORS · CORE MAZE · "+level().sector;document.getElementById("mazeTitle").textContent=state.level===4?"NEURAL LABYRINTH":"REACH THE CORE";drawMaze();minigame.classList.add("show");minigame.setAttribute("aria-hidden","false")}
+function drawMaze(){const m=mazeGame;mazeEl.innerHTML="";mazeEl.style.gridTemplateColumns="repeat("+m.size+",1fr)";for(let r=0;r<m.size;r++)for(let c=0;c<m.size;c++){const b=document.createElement("div"),wall=m.grid[r][c]===1;b.className="maze-cell "+(wall?"wall ":"")+(r===m.size-1&&c===m.size-1?"core ":"")+(r===m.r&&c===m.c?"player":"");mazeEl.appendChild(b)}}
+function moveMaze(dr,dc){const m=mazeGame;if(!m||m.done)return;const nr=m.r+dr,nc=m.c+dc;if(nr<0||nc<0||nr>=m.size||nc>=m.size||m.grid[nr][nc]){mazeStatus.className="maze-status bad";mazeStatus.textContent="Blocked. Find another route.";return}m.r=nr;m.c=nc;mazeStatus.className="maze-status";mazeStatus.textContent="Signal stable. Keep moving.";drawMaze();if(m.r===m.size-1&&m.c===m.size-1){m.done=true;mazeStatus.className="maze-status good";mazeStatus.textContent="CORE REACHED. Sector transition unlocked.";setTimeout(()=>finishCoreMaze(true),500)}}
+function finishCoreMaze(success,viaValky=false){if(!mazeGame)return;mazeGame=null;minigame.classList.remove("show");minigame.setAttribute("aria-hidden","true");if(success){state.survival=Math.min(5,state.survival+1);if(viaValky){state.connection+=1;state.identity=Math.max(0,state.identity-1)}else state.knowledge+=1}else state.survival=Math.max(0,state.survival-1);renderStats();if(state.identity<=0)return endGame("identity");if(state.survival<=0)return endGame("extinction");setTimeout(()=>draw(),450)}
+function resetCoreMaze(){startCoreMaze()}
+function handleMazeKey(e){if(!minigame.classList.contains("show"))return;const k=e.key.toLowerCase(),map={arrowup:[-1,0],w:[-1,0],arrowdown:[1,0],s:[1,0],arrowleft:[0,-1],a:[0,-1],arrowright:[0,1],d:[0,1]};if(map[k]){e.preventDefault();moveMaze(map[k][0],map[k][1])}}
+addEventListener("keydown",handleMazeKey);
 let current=[],locked=true;const cardsEl=document.getElementById('cards'),flash=document.getElementById('flash'),choice=document.getElementById('choice'),gameover=document.getElementById('gameover');
 function emitFX(kind){const layer=document.getElementById('fxLayer');for(let i=0;i<(kind==='fatal'?30:20);i++){const p=document.createElement('i');p.className='fx-particle '+(kind==='good'?'':'bad')+(kind==='fatal'?' fatal':'');p.style.setProperty('--x',((Math.random()-.5)*Math.min(innerWidth*.72,900))+'px');p.style.setProperty('--y',((Math.random()-.5)*Math.min(innerHeight*.62,650))+'px');p.style.left=(50+(Math.random()-.5)*8)+'%';p.style.top=(48+(Math.random()-.5)*8)+'%';p.style.animationDelay=(Math.random()*.12)+'s';layer.appendChild(p);setTimeout(()=>p.remove(),1200)}}
 function choiceClass(d){if(d.fatal)return 'fatal-choice';if(d.i<=-2||d.c<0)return 'bad-choice';return 'good-choice'}
@@ -460,7 +426,7 @@ function completeLevel(){
    document.getElementById('choiceText').textContent='The shelter holds. Before entering the ruins, something between the sectors still needs to be restored.';
    const stats=document.getElementById('choiceStats');stats.innerHTML='';
    [['SURVIVAL',state.survival],['KNOWLEDGE',state.knowledge],['IDENTITY',state.identity]].forEach(([label,val])=>{const item=document.createElement('div');item.className='choice-stat neutral';item.textContent=label+' '+val;stats.appendChild(item)});
-   choice.dataset.minigame='restore';
+   choice.dataset.minigame='maze';
    return;
  }
 
@@ -508,7 +474,7 @@ choice.addEventListener('click',()=>{
  if(choice.dataset.final==='true'){choice.removeAttribute('data-final');choice.classList.remove('show','hide');setTimeout(()=>drawFinalChoice(),260);return}
  if(choice.dataset.levelComplete==='true'){
   choice.removeAttribute('data-level-complete');choice.classList.remove('show','hide');
-  if(choice.dataset.minigame==='restore'){choice.removeAttribute('data-minigame');setTimeout(()=>startSystemRestore(),260);return}
+  if(choice.dataset.minigame==='maze'){choice.removeAttribute('data-minigame');setTimeout(()=>startCoreMaze(),260);return}
   cardsEl.classList.add('round-leave');setTimeout(()=>{cardsEl.classList.remove('resolving','round-enter','round-leave');draw()},360);return
 }
  choice.classList.remove('show','hide');cardsEl.classList.add('round-leave');setTimeout(()=>{cardsEl.classList.remove('resolving','round-enter','round-leave');draw()},360)
