@@ -61,28 +61,8 @@ canvas{position:absolute;inset:0;z-index:2;pointer-events:none}
 .gameover{position:absolute;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at center,rgba(42,0,7,.18),rgba(0,0,0,.86));opacity:0;pointer-events:none;transition:.8s}.gameover.show{opacity:1;pointer-events:auto}.gameover .panel{width:min(620px,calc(100% - 36px));padding:34px 36px;border:1px solid rgba(255,95,109,.35);border-radius:18px;background:rgba(5,7,10,.88);backdrop-filter:blur(18px);box-shadow:0 30px 100px rgba(0,0,0,.65);text-align:center}.gameover .eyebrow{font-size:10px;letter-spacing:.3em;color:var(--danger)}.gameover h1{margin:10px 0 8px;font-size:30px}.gameover p{margin:0 auto;color:#adb7c1;line-height:1.6;max-width:510px;font-size:13px}.gameover .statsEnd{margin:18px 0;color:#707d89;font-size:10px;letter-spacing:.14em}.restart{margin-top:18px;border:1px solid rgba(111,231,255,.35);background:rgba(111,231,255,.08);color:var(--text);padding:11px 18px;border-radius:10px;cursor:pointer;font:inherit}.restart:hover{background:rgba(111,231,255,.15)}
 @media(max-width:800px){.cards{gap:8px}.card{width:150px;height:225px}.name{font-size:14px}.desc{font-size:9px}.stats{display:none}.hud{padding:18px}.bottom{margin-bottom:5px}.world-label{left:18px;bottom:100px}}
 
-/* --- MINI-GAME: SYSTEM RESTORE --- */
-.minigame{position:absolute;inset:0;z-index:18;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at center,rgba(4,18,25,.34),rgba(0,0,0,.82));opacity:0;pointer-events:none;transition:.45s ease}
-.minigame.show{opacity:1;pointer-events:auto}
-.minigame-panel{width:min(760px,calc(100% - 36px));padding:28px;border:1px solid rgba(111,231,255,.28);border-radius:18px;background:rgba(5,9,13,.92);backdrop-filter:blur(18px);box-shadow:0 30px 100px rgba(0,0,0,.7);text-align:center}
-.minigame-eyebrow{font-size:9px;letter-spacing:.3em;color:var(--cyan)}
-.minigame h2{margin:9px 0 6px;font-size:25px}
-.minigame-sub{margin:0 auto 20px;max-width:570px;color:#aeb8c4;font-size:12px;line-height:1.5}
-.restore-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;max-width:600px;margin:0 auto 20px}
-.restore-node{height:68px;border:1px solid rgba(255,255,255,.13);border-radius:10px;background:rgba(255,255,255,.025);color:#aeb8c4;font-size:9px;letter-spacing:.1em;cursor:pointer;transition:.18s;position:relative}
-.restore-node:hover{border-color:rgba(111,231,255,.45);background:rgba(111,231,255,.07);color:#e8edf2}
-.restore-node.power{border-color:rgba(255,207,120,.32);color:var(--gold)}
-.restore-node.core{border-color:rgba(111,231,255,.45);color:var(--cyan)}
-.restore-node.connected{background:rgba(111,231,255,.09);box-shadow:0 0 22px rgba(111,231,255,.08)}
-.restore-node.connected::after{content:'LINKED';position:absolute;bottom:6px;left:0;right:0;font-size:6px;color:var(--cyan);letter-spacing:.18em}
-.restore-actions{display:flex;justify-content:center;gap:10px;flex-wrap:wrap}
-.restore-actions button{border:1px solid rgba(111,231,255,.3);background:rgba(111,231,255,.06);color:var(--text);padding:10px 15px;border-radius:9px;cursor:pointer;font:600 9px/1 Inter,system-ui,sans-serif;letter-spacing:.13em}
-.restore-actions button:hover{background:rgba(111,231,255,.12);border-color:rgba(111,231,255,.55)}
-.restore-actions button.alt{border-color:rgba(255,207,120,.3);color:#f0d79d}
-.restore-status{min-height:18px;margin-top:14px;font-size:10px;color:#8794a1;letter-spacing:.08em}
-.restore-status.good{color:var(--green)}.restore-status.bad{color:var(--danger)}
-@media(max-width:700px){.restore-grid{grid-template-columns:repeat(2,1fr)}.restore-node{height:58px}}
-
+/* --- MINI-GAME: CORE MAZE --- */
+.minigame{position:absolute;inset:0;z-index:18;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at center,rgba(4,18,25,.34),rgba(0,0,0,.84));opacity:0;pointer-events:none;transition:.45s ease}.minigame.show{opacity:1;pointer-events:auto}.minigame-panel{width:min(820px,calc(100% - 36px));padding:26px;border:1px solid rgba(111,231,255,.28);border-radius:18px;background:rgba(5,9,13,.94);backdrop-filter:blur(18px);box-shadow:0 30px 100px rgba(0,0,0,.7);text-align:center}.minigame-eyebrow{font-size:9px;letter-spacing:.3em;color:var(--cyan)}.minigame h2{margin:9px 0 5px;font-size:25px}.minigame-sub{margin:0 auto 16px;max-width:620px;color:#aeb8c4;font-size:12px;line-height:1.5}.maze-wrap{display:flex;justify-content:center}.maze{display:grid;gap:2px;width:min(68vw,500px);height:min(68vw,500px);max-width:500px;max-height:500px;padding:5px;border:1px solid rgba(111,231,255,.16);background:rgba(0,0,0,.45)}.maze-cell{position:relative;min-width:0;min-height:0;background:rgba(111,231,255,.025);border:1px solid rgba(255,255,255,.025)}.maze-cell.wall{background:rgba(3,6,9,.92);border-color:rgba(111,231,255,.055)}.maze-cell.player::after{content:"";position:absolute;width:52%;height:52%;left:24%;top:24%;border-radius:50%;background:var(--cyan);box-shadow:0 0 18px rgba(111,231,255,.8)}.maze-cell.core{background:rgba(255,207,120,.09);border-color:rgba(255,207,120,.35)}.maze-cell.core::before{content:"CORE";position:absolute;inset:0;display:grid;place-items:center;font-size:6px;color:var(--gold);letter-spacing:.08em}.maze-status{min-height:18px;margin:13px 0 10px;font-size:10px;color:#8794a1}.maze-status.good{color:var(--green)}.maze-status.bad{color:var(--danger)}.maze-controls,.maze-actions{display:flex;justify-content:center;gap:7px;flex-wrap:wrap}.maze-actions{margin-top:10px}.maze-controls button,.maze-actions button{border:1px solid rgba(111,231,255,.3);background:rgba(111,231,255,.06);color:var(--text);padding:9px 13px;border-radius:8px;cursor:pointer;font:600 9px/1 Inter,system-ui,sans-serif;letter-spacing:.1em}.maze-actions .alt{border-color:rgba(255,207,120,.3);color:#f0d79d}
 /* --- ORGANIC: MENU / TUTORIAL / ATMOSPHERE / CARD ART UPGRADE --- */
 .ambient-scene{position:absolute;inset:0;z-index:1;pointer-events:none;overflow:hidden;mix-blend-mode:screen;opacity:.9}
 .ambient-scene .nebula{position:absolute;inset:-20%;background:
@@ -241,19 +221,7 @@ canvas{position:absolute;inset:0;z-index:2;pointer-events:none}
   <div class="choice-stats" id="choiceStats"></div>
   <div class="next-round" id="nextRound">CLICK TO CONTINUE</div>
 </div>
-  <div id="minigame" class="minigame" aria-hidden="true">
-  <div class="minigame-panel">
-    <div class="minigame-eyebrow">BETWEEN SECTORS · SYSTEM RESTORE</div>
-    <h2>RESTORE THE SHELTER</h2>
-    <p class="minigame-sub">The shelter is losing power. Connect POWER to CORE by linking three nodes. Or let Valky solve it.</p>
-    <div id="restoreGrid" class="restore-grid"></div>
-    <div class="restore-actions">
-      <button id="restoreReset">RESET PATH</button>
-      <button id="restoreValky" class="alt">LET VALKY SOLVE</button>
-    </div>
-    <div id="restoreStatus" class="restore-status">Select POWER to begin.</div>
-  </div>
-</div>
+  <div id="minigame" class="minigame" aria-hidden="true"><div class="minigame-panel"><div class="minigame-eyebrow" id="mazeEyebrow">BETWEEN SECTORS · CORE MAZE</div><h2 id="mazeTitle">REACH THE CORE</h2><p class="minigame-sub" id="mazeSub">Navigate the changing structure. Reach the CORE without hitting the walls.</p><div class="maze-wrap"><div id="maze" class="maze"></div></div><div id="mazeStatus" class="maze-status">Use WASD or arrow keys.</div><div class="maze-controls"><button data-move="up">UP</button><button data-move="left">LEFT</button><button data-move="down">DOWN</button><button data-move="right">RIGHT</button></div><div class="maze-actions"><button id="mazeReset">NEW MAZE</button><button id="mazeValky" class="alt">LET VALKY NAVIGATE</button></div></div></div>
 <div class="gameover" id="gameover">
     <div class="panel">
       <div class="eyebrow">ORGANIC · TERMINAL STATE</div>
