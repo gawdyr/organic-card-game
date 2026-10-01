@@ -62,98 +62,7 @@ canvas{position:absolute;inset:0;z-index:2;pointer-events:none}
 @media(max-width:800px){.cards{gap:8px}.card{width:150px;height:225px}.name{font-size:14px}.desc{font-size:9px}.stats{display:none}.hud{padding:18px}.bottom{margin-bottom:5px}.world-label{left:18px;bottom:100px}}
 
 /* --- MINI-GAME: CORE MAZE --- */
-.minigame{position:absolute;inset:0;z-index:18;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at center,rgba(4,18,25,.34),rgba(0,0,0,.84));opacity:0;pointer-events:none;transition:.45s ease}.minigame.show{opacity:1;pointer-events:auto}.minigame-panel{width:min(820px,calc(100% - 36px));padding:26px;border:1px solid rgba(111,231,255,.28);border-radius:18px;background:rgba(5,9,13,.94);backdrop-filter:blur(18px);box-shadow:0 30px 100px rgba(0,0,0,.7);text-align:center}.minigame-eyebrow{font-size:9px;letter-spacing:.3em;color:var(--cyan)}.minigame h2{margin:9px 0 5px;font-size:25px}.minigame-sub{margin:0 auto 16px;max-width:620px;color:#aeb8c4;font-size:12px;line-height:1.5}.maze-wrap{display:flex;justify-content:center}.maze{display:grid;gap:2px;width:min(68vw,500px);height:min(68vw,500px);max-width:500px;max-height:500px;padding:5px;border:1px solid rgba(111,231,255,.16);background:rgba(0,0,0,.45)}.maze-cell{position:relative;min-width:0;min-height:0;background:rgba(111,231,255,.055);border:1px solid rgba(111,231,255,.07);box-shadow:inset 0 0 5px rgba(111,231,255,.025)}.maze-cell.wall{background:linear-gradient(145deg,rgba(28,43,51,.98),rgba(7,14,19,.98));border:1px solid rgba(111,231,255,.32);box-shadow:inset 0 0 8px rgba(111,231,255,.08),0 0 3px rgba(111,231,255,.08)}.maze-cell.wall::after{content:"";position:absolute;inset:1px;border:1px solid rgba(255,255,255,.045);pointer-events:none}.maze-cell.player::after{content:"";position:absolute;width:52%;height:52%;left:24%;top:24%;border-radius:50%;background:var(--cyan);box-shadow:0 0 18px rgba(111,231,255,.8)}.maze-cell.core{background:rgba(255,207,120,.09);border-color:rgba(255,207,120,.35)}.maze-cell.core::before{content:"CORE";position:absolute;inset:0;display:grid;place-items:center;font-size:6px;color:var(--gold);letter-spacing:.08em}.maze-status{min-height:18px;margin:13px 0 10px;font-size:10px;color:#8794a1}.maze-status.good{color:var(--green)}.maze-status.bad{color:var(--danger)}.maze-controls,.maze-actions{display:flex;justify-content:center;gap:7px;flex-wrap:wrap}.maze-actions{margin-top:10px}.maze-controls button,.maze-actions button{border:1px solid rgba(111,231,255,.3);background:rgba(111,231,255,.06);color:var(--text);padding:9px 13px;border-radius:8px;cursor:pointer;font:600 9px/1 Inter,system-ui,sans-serif;letter-spacing:.1em}.maze-actions .alt{border-color:rgba(255,207,120,.3);color:#f0d79d}
-/* --- ORGANIC: MENU / TUTORIAL / ATMOSPHERE / CARD ART UPGRADE --- */
-.ambient-scene{position:absolute;inset:0;z-index:1;pointer-events:none;overflow:hidden;mix-blend-mode:screen;opacity:.9}
-.ambient-scene .nebula{position:absolute;inset:-20%;background:
- radial-gradient(ellipse at 18% 32%,rgba(52,207,255,.13),transparent 27%),
- radial-gradient(ellipse at 78% 24%,rgba(155,82,255,.12),transparent 25%),
- radial-gradient(ellipse at 56% 78%,rgba(255,102,84,.08),transparent 30%);
- filter:blur(24px);animation:nebulaDrift 22s ease-in-out infinite alternate}
-.ambient-scene .grid{position:absolute;inset:0;background:
- linear-gradient(rgba(111,231,255,.035) 1px,transparent 1px),
- linear-gradient(90deg,rgba(111,231,255,.035) 1px,transparent 1px);
- background-size:72px 72px;transform:perspective(500px) rotateX(62deg) scale(1.8) translateY(18%);transform-origin:center bottom;opacity:.28;animation:gridMove 10s linear infinite}
-.ambient-scene .scan{position:absolute;inset:0;background:linear-gradient(180deg,transparent 0%,rgba(111,231,255,.045) 48%,transparent 52%);background-size:100% 12px;opacity:.2;animation:scanMove 7s linear infinite}
-.ambient-scene .orb{position:absolute;width:28vw;height:28vw;min-width:220px;min-height:220px;max-width:520px;max-height:520px;border:1px solid rgba(111,231,255,.12);border-radius:50%;left:50%;top:45%;transform:translate(-50%,-50%);box-shadow:0 0 80px rgba(111,231,255,.06),inset 0 0 70px rgba(111,231,255,.035);animation:orbPulse 6s ease-in-out infinite}
-.ambient-scene .orb::before,.ambient-scene .orb::after{content:"";position:absolute;inset:12%;border:1px solid rgba(255,207,120,.09);border-radius:50%;animation:orbSpin 16s linear infinite}
-.ambient-scene .orb::after{inset:26%;border-color:rgba(111,231,255,.14);animation-duration:11s;animation-direction:reverse}
-@keyframes nebulaDrift{to{transform:translate3d(5%,-3%,0) scale(1.08) rotate(2deg)}}@keyframes gridMove{to{background-position:0 72px,72px 0}}@keyframes scanMove{to{transform:translateY(12px)}}@keyframes orbPulse{50%{transform:translate(-50%,-50%) scale(1.07);opacity:.7}}@keyframes orbSpin{to{transform:rotate(360deg)}}
-
-.menu-screen{position:absolute;inset:0;z-index:30;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 50% 42%,rgba(5,20,28,.25),rgba(0,0,0,.76) 72%);backdrop-filter:blur(4px);transition:opacity .65s ease,visibility .65s ease}
-.menu-screen.hidden{opacity:0;visibility:hidden;pointer-events:none}
-.menu-panel{width:min(720px,calc(100% - 36px));padding:52px 52px 42px;text-align:center;border:1px solid rgba(111,231,255,.18);border-radius:24px;background:linear-gradient(145deg,rgba(5,12,18,.88),rgba(4,7,11,.76));box-shadow:0 35px 120px rgba(0,0,0,.75),inset 0 0 70px rgba(111,231,255,.025);backdrop-filter:blur(22px);animation:menuIn 1s cubic-bezier(.18,.85,.18,1)}
-.menu-kicker{font-size:9px;letter-spacing:.42em;color:var(--cyan);margin-bottom:14px}
-.menu-title{font-size:clamp(48px,9vw,86px);letter-spacing:.16em;margin:0 0 8px;font-weight:700;line-height:.95;text-shadow:0 0 40px rgba(111,231,255,.16)}
-.menu-sub{font-size:11px;letter-spacing:.18em;color:#7f8d9b;margin-bottom:38px}
-.menu-copy{max-width:510px;margin:0 auto 30px;color:#9ba8b4;font-size:12px;line-height:1.7}
-.menu-actions{display:flex;justify-content:center;gap:12px;flex-wrap:wrap}
-.menu-btn{min-width:190px;border:1px solid rgba(111,231,255,.35);background:rgba(111,231,255,.08);color:#e8edf2;padding:13px 20px;border-radius:11px;cursor:pointer;font:600 11px/1 Inter,system-ui,sans-serif;letter-spacing:.16em;text-transform:uppercase;transition:.25s}
-.menu-btn:hover{transform:translateY(-2px);background:rgba(111,231,255,.14);box-shadow:0 10px 30px rgba(111,231,255,.08)}
-.menu-btn.secondary{border-color:rgba(255,255,255,.14);background:rgba(255,255,255,.035);color:#aeb8c4}
-.menu-meta{margin-top:28px;font-size:8px;letter-spacing:.2em;color:#56626e}
-@keyframes menuIn{from{opacity:0;transform:translateY(25px) scale(.97);filter:blur(8px)}to{opacity:1;transform:none;filter:none}}
-
-.tutorial{position:absolute;inset:0;z-index:31;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(0,0,0,.78);backdrop-filter:blur(16px);opacity:0;visibility:hidden;pointer-events:none;transition:.35s}
-.tutorial.show{opacity:1;visibility:visible;pointer-events:auto}
-.tutorial-panel{width:min(980px,100%);max-height:min(820px,92vh);overflow:auto;border:1px solid rgba(111,231,255,.18);border-radius:20px;background:rgba(5,9,14,.94);box-shadow:0 30px 100px rgba(0,0,0,.7);padding:28px}
-.tutorial-head{display:flex;justify-content:space-between;gap:20px;align-items:flex-start;margin-bottom:22px}
-.tutorial-head h2{margin:0;font-size:28px;letter-spacing:.08em}.tutorial-head p{margin:6px 0 0;color:#7f8d9b;font-size:11px}
-.tutorial-close{border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);color:#9ba8b4;border-radius:8px;padding:8px 12px;cursor:pointer}
-.tutorial-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
-.tut-card{min-height:190px;border:1px solid rgba(255,255,255,.09);border-radius:14px;padding:18px;background:linear-gradient(145deg,rgba(14,21,29,.9),rgba(7,11,16,.86));position:relative;overflow:hidden}
-.tut-card.good{border-color:rgba(111,231,255,.2)}.tut-card.risk{border-color:rgba(255,207,120,.2)}.tut-card.fatal{border-color:rgba(255,95,109,.22)}
-.tut-symbol{height:58px;width:58px;border-radius:14px;margin-bottom:16px;display:grid;place-items:center;font-size:24px;border:1px solid rgba(255,255,255,.1);background:radial-gradient(circle,rgba(111,231,255,.18),rgba(111,231,255,.03))}
-.tut-card h3{margin:0 0 7px;font-size:15px}.tut-card p{margin:0;color:#8f9ca8;font-size:11px;line-height:1.55}.tut-result{margin-top:13px;padding-top:11px;border-top:1px solid rgba(255,255,255,.07);font-size:9px;letter-spacing:.08em;color:#6f7d89}
-.tutorial-tip{margin-top:14px;padding:14px 16px;border:1px solid rgba(111,231,255,.12);border-radius:12px;background:rgba(111,231,255,.035);color:#8f9ca8;font-size:10px;line-height:1.6}
-.volume-wrap{position:absolute;z-index:22;bottom:24px;right:112px;display:flex;align-items:center;gap:8px;padding:7px 10px;border:1px solid rgba(111,231,255,.16);background:rgba(7,10,14,.58);border-radius:9px;backdrop-filter:blur(10px);transition:.2s}
-.volume-wrap.hidden{display:none}.volume-label{font-size:8px;letter-spacing:.12em;color:#71808c}
-#volumeSlider{width:112px;accent-color:#6fe7ff;cursor:pointer}
-#volumeValue{font-size:8px;color:#9eabb7;width:27px;text-align:right}
-@media(max-width:800px){.menu-panel{padding:38px 24px 30px}.tutorial-grid{grid-template-columns:1fr}.tutorial-panel{padding:20px}.volume-wrap{right:18px;bottom:58px}.sound-toggle{bottom:18px;right:18px}}
-
-/* Distinct illustrated card worlds — generated in CSS, no stock art */
-.art{isolation:isolate}
-.art::before{content:"";position:absolute;inset:0;z-index:1;opacity:.9}
-.art.memory{background:radial-gradient(circle at 72% 28%,rgba(255,207,120,.34),transparent 13%),radial-gradient(circle at 28% 60%,rgba(111,231,255,.18),transparent 20%),linear-gradient(145deg,#192b36,#090d14 68%)}
-.art.memory::before{width:145px;height:145px;left:28px;top:8px;border-radius:50%;border:1px solid rgba(255,207,120,.28);box-shadow:0 0 55px rgba(255,207,120,.12),inset 0 0 40px rgba(255,207,120,.06);background:radial-gradient(circle at 40% 35%,rgba(255,230,176,.65),rgba(111,231,255,.08) 34%,transparent 60%);animation:memoryPulse 5s ease-in-out infinite}
-.art.memory::after{background:linear-gradient(180deg,transparent 35%,rgba(5,7,10,.94))}
-.art.location{background:linear-gradient(155deg,#243139,#070c11)}
-.art.location::before{inset:auto 0 0;height:78%;background:linear-gradient(160deg,transparent 0 15%,rgba(111,231,255,.12) 16% 18%,transparent 19% 28%,rgba(36,55,62,.9) 29% 39%,transparent 40% 46%,rgba(16,28,34,.95) 47% 62%,transparent 63%),linear-gradient(90deg,transparent 0 14%,rgba(111,231,255,.16) 15% 16%,transparent 17% 27%,rgba(111,231,255,.09) 28% 29%,transparent 30% 100%);clip-path:polygon(0 48%,18% 36%,28% 47%,44% 25%,58% 42%,73% 19%,100% 39%,100% 100%,0 100%);animation:ruinShift 9s ease-in-out infinite alternate}
-.art.location::after{background:linear-gradient(180deg,transparent 30%,rgba(5,7,10,.96))}
-.art.signal{background:radial-gradient(circle at 50% 48%,rgba(111,231,255,.32),transparent 8%),radial-gradient(circle at 50% 48%,transparent 8%,rgba(111,231,255,.12) 9%,transparent 10% 17%,rgba(111,231,255,.1) 18%,transparent 19% 31%,rgba(111,231,255,.07) 32%,transparent 33%),linear-gradient(145deg,#101f2b,#050a10)}
-.art.signal::before{width:2px;height:100%;left:50%;top:0;background:linear-gradient(transparent,rgba(111,231,255,.7),transparent);box-shadow:0 0 30px rgba(111,231,255,.35);animation:signalScan 2.8s ease-in-out infinite}
-.art.signal::after{background:linear-gradient(180deg,transparent 35%,rgba(5,7,10,.94))}
-.art.ai{background:radial-gradient(circle at 50% 45%,rgba(155,82,255,.3),transparent 22%),linear-gradient(145deg,#17142a,#080a12)}
-.art.ai::before{width:120px;height:120px;left:45px;top:18px;border:1px solid rgba(190,150,255,.42);transform:rotate(45deg);box-shadow:0 0 45px rgba(155,82,255,.16),inset 0 0 30px rgba(155,82,255,.08);animation:aiSpin 12s linear infinite}
-.art.ai::after{background:linear-gradient(180deg,transparent 38%,rgba(5,7,10,.95))}
-.art.ancient{background:radial-gradient(ellipse at 50% 34%,rgba(255,170,72,.26),transparent 23%),linear-gradient(155deg,#352519,#0c0b0a 68%)}
-.art.ancient::before{left:50%;top:8px;width:92px;height:155px;transform:translateX(-50%);clip-path:polygon(50% 0,92% 16%,78% 100%,22% 100%,8% 16%);background:linear-gradient(90deg,#11100e,#8b5c2e 45%,#19130d);box-shadow:0 0 45px rgba(255,170,72,.16);animation:monolithBreath 4s ease-in-out infinite}
-.art.ancient::after{background:linear-gradient(180deg,transparent 35%,rgba(5,7,10,.95))}
-@keyframes memoryPulse{50%{transform:scale(1.07);opacity:.72}}@keyframes ruinShift{to{transform:translateX(10px) scale(1.03)}}@keyframes signalScan{50%{transform:translateY(12px);opacity:.35}}@keyframes aiSpin{to{transform:rotate(405deg)}}@keyframes monolithBreath{50%{filter:brightness(1.4);box-shadow:0 0 70px rgba(255,170,72,.28)}}
-
-.choice{min-width:330px;padding:22px 26px 18px;border-color:rgba(111,231,255,.28);box-shadow:0 20px 70px rgba(0,0,0,.55),inset 0 0 45px rgba(111,231,255,.025)}
-.choice.show{animation:choiceReveal .48s cubic-bezier(.18,.85,.18,1) both}
-.choice-kicker{font-size:8px;letter-spacing:.28em;color:var(--cyan);margin-bottom:9px}
-.choice b{display:block;font-size:20px;letter-spacing:.03em}
-.choice span{display:block;margin-top:7px;font-size:10px;color:#7f8d9b}
-.choice-stats{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-top:15px}
-.choice-stat{padding:7px 9px;border:1px solid rgba(255,255,255,.09);border-radius:8px;background:rgba(255,255,255,.035);font-size:9px;letter-spacing:.06em}
-.choice-stat.positive{border-color:rgba(111,231,255,.22);color:#bcefff}
-.choice-stat.negative{border-color:rgba(255,95,109,.2);color:#ffabb3}
-.choice-stat.neutral{color:#8c99a5}
-.next-round{margin-top:14px;padding-top:11px;border-top:1px solid rgba(255,255,255,.07);font-size:8px;letter-spacing:.16em;color:#687581;opacity:.8}
-.next-round strong{color:#aeb8c4;font-size:10px}
-.choice.hide{animation:choiceDismiss .32s ease forwards}
-@keyframes choiceReveal{from{opacity:0;transform:translate(-50%,-44%) scale(.9);filter:blur(8px)}60%{transform:translate(-50%,-50%) scale(1.025);filter:blur(0)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
-@keyframes choiceDismiss{to{opacity:0;transform:translate(-50%,-55%) scale(.96);filter:blur(5px)}}
-@media(max-width:800px){.choice{min-width:270px;width:calc(100% - 36px);padding:18px}.choice-stats{gap:5px}}
-
-.cards.round-enter{animation:roundCardsIn .65s cubic-bezier(.18,.85,.18,1) both}
-.cards.round-leave{animation:roundCardsOut .34s ease both}
-@keyframes roundCardsIn{from{opacity:0;transform:translate(-50%,-47%) scale(.96);filter:blur(7px)}to{opacity:1;transform:translate(-50%,-50%) scale(1);filter:blur(0)}}
-@keyframes roundCardsOut{to{opacity:0;transform:translate(-50%,-53%) scale(.98);filter:blur(5px)}}
-</style>
+.sector-cinematic{position:absolute;inset:0;z-index:25;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 50% 45%,rgba(111,231,255,.12),rgba(0,0,0,.94) 68%);opacity:0;pointer-events:none;transition:opacity .6s ease}.sector-cinematic.show{opacity:1;pointer-events:auto}.cinematic-inner{text-align:center;width:min(760px,calc(100% - 42px));transform:translateY(18px);transition:transform .8s ease}.sector-cinematic.show .cinematic-inner{transform:translateY(0)}.cinematic-kicker{font-size:9px;letter-spacing:.42em;color:var(--cyan);margin-bottom:14px}.cinematic-title{font-size:clamp(32px,6vw,72px);letter-spacing:.08em;font-weight:700;text-shadow:0 0 35px rgba(111,231,255,.25)}.cinematic-line{height:1px;width:120px;margin:20px auto;background:linear-gradient(90deg,transparent,var(--cyan),transparent)}.cinematic-text{max-width:620px;margin:auto;color:#aeb8c4;font-size:13px;line-height:1.8}.signal-arena{width:min(430px,72vw);height:210px;margin:18px auto 12px;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden;border:1px solid rgba(111,231,255,.16);background:radial-gradient(circle,rgba(111,231,255,.08),rgba(0,0,0,.28))}.signal-ring{position:absolute;width:48px;height:48px;border:2px solid var(--cyan);border-radius:50%;box-shadow:0 0 22px rgba(111,231,255,.35);transition:width .12s linear,height .12s linear,opacity .12s linear}.signal-core{width:12px;height:12px;border-radius:50%;background:var(--cyan);box-shadow:0 0 25px var(--cyan);z-index:2}.signal-target{position:absolute;width:74px;height:74px;border:1px dashed rgba(111,231,255,.35);border-radius:50%}.signal-status{font-size:10px;letter-spacing:.18em;color:#8e9aa8}.signal-hit{animation:signalHit .28s ease}@keyframes signalHit{50%{transform:scale(1.18);filter:brightness(1.8)}}</style>
 </head>
 <body>
 <div id="app">
@@ -221,7 +130,8 @@ canvas{position:absolute;inset:0;z-index:2;pointer-events:none}
   <div class="choice-stats" id="choiceStats"></div>
   <div class="next-round" id="nextRound">CLICK TO CONTINUE</div>
 </div>
-  <div id="minigame" class="minigame" aria-hidden="true"><div class="minigame-panel"><div class="minigame-eyebrow" id="mazeEyebrow">BETWEEN SECTORS · CORE MAZE</div><h2 id="mazeTitle">REACH THE CORE</h2><p class="minigame-sub" id="mazeSub">Navigate the changing structure. Reach the CORE without hitting the walls.</p><div class="maze-wrap"><div id="maze" class="maze"></div></div><div id="mazeStatus" class="maze-status">Use WASD or arrow keys.</div><div class="maze-controls"><button data-move="up">UP</button><button data-move="left">LEFT</button><button data-move="down">DOWN</button><button data-move="right">RIGHT</button></div><div class="maze-actions"><button id="mazeReset">NEW MAZE</button><button id="mazeValky" class="alt">LET VALKY NAVIGATE</button></div></div></div>
+  <div id="minigame" class="minigame" aria-hidden="true"><div class="minigame-panel"><div class="minigame-eyebrow" id="mazeEyebrow">BETWEEN SECTORS · CORE MAZE</div><h2 id="mazeTitle">REACH THE CORE</h2><p class="minigame-sub" id="mazeSub">Navigate the changing structure. Reach the CORE without hitting the walls.</p><div id="mazeModeMaze"><div class="maze-wrap"><div id="maze" class="maze"></div></div><div id="mazeStatus" class="maze-status">Use WASD or arrow keys.</div><div class="maze-controls"><button data-move="up">UP</button><button data-move="left">LEFT</button><button data-move="down">DOWN</button><button data-move="right">RIGHT</button></div><div class="maze-actions"><button id="mazeReset">NEW MAZE</button><button id="mazeValky" class="alt">LET VALKY NAVIGATE</button></div></div><div id="signalMode" style="display:none"><div class="signal-arena" id="signalArena"><div class="signal-target"></div><div class="signal-ring" id="signalRing"></div><div class="signal-core"></div></div><div id="signalStatus" class="signal-status">CLICK WHEN THE RING MATCHES THE TARGET</div><div class="maze-actions"><button id="signalReset">RESET SIGNAL</button></div></div></div></div>
+<div class="sector-cinematic" id="sectorCinematic" aria-hidden="true"><div class="cinematic-inner"><div class="cinematic-kicker" id="cinematicKicker">SECTOR COMPLETE</div><div class="cinematic-title" id="cinematicTitle">SECTOR 01</div><div class="cinematic-line"></div><div class="cinematic-text" id="cinematicText">The world changes around you.</div></div></div>
 <div class="gameover" id="gameover">
     <div class="panel">
       <div class="eyebrow">ORGANIC · TERMINAL STATE</div>
@@ -339,6 +249,8 @@ function startCoreMaze(){locked=true;const sizes=state.level===1?[9,11]:state.le
 function drawMaze(){const m=mazeGame;mazeEl.innerHTML="";mazeEl.style.gridTemplateColumns="repeat("+m.size+",1fr)";for(let r=0;r<m.size;r++)for(let c=0;c<m.size;c++){const b=document.createElement("div"),wall=m.grid[r][c]===1;b.className="maze-cell "+(wall?"wall ":"")+(r===m.size-1&&c===m.size-1?"core ":"")+(r===m.r&&c===m.c?"player":"");mazeEl.appendChild(b)}}
 function moveMaze(dr,dc){const m=mazeGame;if(!m||m.done)return;const nr=m.r+dr,nc=m.c+dc;if(nr<0||nc<0||nr>=m.size||nc>=m.size||m.grid[nr][nc]){mazeStatus.className="maze-status bad";mazeStatus.textContent="Blocked. Find another route.";return}m.r=nr;m.c=nc;mazeStatus.className="maze-status";mazeStatus.textContent="Signal stable. Keep moving.";drawMaze();if(m.r===m.size-1&&m.c===m.size-1){m.done=true;mazeStatus.className="maze-status good";mazeStatus.textContent="CORE REACHED. Sector transition unlocked.";setTimeout(()=>finishCoreMaze(true),500)}}
 function finishCoreMaze(success,viaValky=false){if(!mazeGame)return;mazeGame=null;minigame.classList.remove("show");minigame.setAttribute("aria-hidden","true");if(success){state.survival=Math.min(5,state.survival+1);if(viaValky){state.connection+=1;state.identity=Math.max(0,state.identity-1)}else state.knowledge+=1}else state.survival=Math.max(0,state.survival-1);renderStats();if(state.identity<=0)return endGame("identity");if(state.survival<=0)return endGame("extinction");setTimeout(()=>draw(),450)}
+function startSignalGame(){locked=true;mazeGame=null;document.getElementById('mazeModeMaze').style.display='none';document.getElementById('signalMode').style.display='block';document.getElementById('mazeEyebrow').textContent='IN-SECTOR · SIGNAL LOCK';document.getElementById('mazeTitle').textContent='ALIGN THE SIGNAL';document.getElementById('mazeSub').textContent='Stabilize the pulse before the transmission collapses.';const overlay=document.getElementById('minigame');overlay.classList.add('show');overlay.setAttribute('aria-hidden','false');let ring=document.getElementById('signalRing'),status=document.getElementById('signalStatus'),running=true,start=performance.now(),duration=2200;function frame(t){if(!running)return;const p=Math.min(1,(t-start)/duration),size=150-(p*104),opacity=1-p*.35;ring.style.width=size+'px';ring.style.height=size+'px';ring.style.opacity=opacity;if(p<1)requestAnimationFrame(frame);else{running=false;status.textContent='SIGNAL LOST. TRY AGAIN.';locked=false}}requestAnimationFrame(frame);document.getElementById('signalArena').onclick=()=>{if(!running)return;const size=parseFloat(ring.style.width)||150;const diff=Math.abs(size-74);running=false;if(diff<18){status.textContent='LOCK ACQUIRED. TRANSMISSION STABLE.';status.className='signal-status good';state.knowledge+=1;state.connection+=1;renderStats();ring.classList.add('signal-hit');setTimeout(()=>finishSignalGame(true),500)}else{status.textContent='MISALIGNMENT. SIGNAL DAMAGED.';status.className='signal-status bad';state.survival=Math.max(0,state.survival-1);renderStats();setTimeout(()=>finishSignalGame(false),500)}};document.getElementById('signalReset').onclick=()=>startSignalGame()}
+function finishSignalGame(){const overlay=document.getElementById('minigame');overlay.classList.remove('show');overlay.setAttribute('aria-hidden','true');document.getElementById('signalMode').style.display='none';document.getElementById('mazeModeMaze').style.display='block';setTimeout(()=>{if(state.survival<=0)endGame('extinction');else{locked=false;draw()}},450)}
 function resetCoreMaze(){startCoreMaze()}
 function handleMazeKey(e){if(!minigame.classList.contains("show"))return;const k=e.key.toLowerCase(),map={arrowup:[-1,0],w:[-1,0],arrowdown:[1,0],s:[1,0],arrowleft:[0,-1],a:[0,-1],arrowright:[0,1],d:[0,1]};if(map[k]){e.preventDefault();moveMaze(map[k][0],map[k][1])}}
 addEventListener("keydown",handleMazeKey);
@@ -404,27 +316,10 @@ function pickFinal(idx,el){
  emitFX(d.fatal?'fatal':'good');
  setTimeout(()=>finalEnding(d.final),850);
 }
+function showSectorCinematic(sector,done){const overlay=document.getElementById('sectorCinematic');document.getElementById('cinematicKicker').textContent='SECTOR COMPLETE';document.getElementById('cinematicTitle').textContent=sector;const lines=['The world shifts. Something ancient has noticed you.','The boundary between you and Valky becomes thinner.','The signal fades behind you. Something else is waiting ahead.','You survived. The ruins did not forget what you changed.','The core is awake. There is no returning to the beginning.'];document.getElementById('cinematicText').textContent=lines[Math.max(0,Math.min(lines.length-1,state.level-1))];overlay.classList.add('show');overlay.setAttribute('aria-hidden','false');setTimeout(()=>{overlay.classList.remove('show');overlay.setAttribute('aria-hidden','true');setTimeout(done,550)},3300)}
 function completeLevel(){
- if(state.level===1){
-   state.level++;state.levelRound=0;state.survival=5;state.finalReady=false;
-   choice.dataset.levelComplete='true';
-   document.getElementById('choiceKicker').textContent='SECTOR SURVIVED';
-   document.getElementById('choiceTitle').textContent=levelTitle();
-   document.getElementById('choiceText').textContent='The shelter holds. Before entering the ruins, something between the sectors still needs to be restored.';
-   const stats=document.getElementById('choiceStats');stats.innerHTML='';
-   [['SURVIVAL',state.survival],['KNOWLEDGE',state.knowledge],['IDENTITY',state.identity]].forEach(([label,val])=>{const item=document.createElement('div');item.className='choice-stat neutral';item.textContent=label+' '+val;stats.appendChild(item)});
-   choice.dataset.minigame='maze';
-   return;
- }
-
- if(state.level>=LEVELS.length)return finalEnding();
- state.level++;state.levelRound=0;state.survival=5;state.finalReady=false;
- choice.dataset.levelComplete='true';
- document.getElementById('choiceKicker').textContent='SECTOR SURVIVED';
- document.getElementById('choiceTitle').textContent=levelTitle();
- document.getElementById('choiceText').textContent='You survived the sector. The world changes, but the consequences follow you.';
- const stats=document.getElementById('choiceStats');stats.innerHTML='';
- [['SURVIVAL',state.survival],['KNOWLEDGE',state.knowledge],['IDENTITY',state.identity]].forEach(([label,val])=>{const item=document.createElement('div');item.className='choice-stat neutral';item.textContent=label+' '+val;stats.appendChild(item)});
+ if(state.level===1){state.level++;state.levelRound=0;state.survival=5;state.finalReady=false;choice.dataset.levelComplete='true';choice.dataset.minigame='maze';document.getElementById('choiceKicker').textContent='SECTOR SURVIVED';document.getElementById('choiceTitle').textContent=levelTitle();document.getElementById('choiceText').textContent='The shelter holds. Before entering the ruins, something between the sectors still needs to be restored.';const stats=document.getElementById('choiceStats');stats.innerHTML='';[['SURVIVAL',state.survival],['KNOWLEDGE',state.knowledge],['IDENTITY',state.identity]].forEach(([label,val])=>{const item=document.createElement('div');item.className='choice-stat neutral';item.textContent=label+' '+val;stats.appendChild(item)});return}
+ if(state.level>=LEVELS.length)return finalEnding();state.level++;state.levelRound=0;state.survival=5;state.finalReady=false;choice.dataset.levelComplete='true';document.getElementById('choiceKicker').textContent='SECTOR SURVIVED';document.getElementById('choiceTitle').textContent=levelTitle();document.getElementById('choiceText').textContent='You survived the sector. The world changes, but the consequences follow you.';const stats=document.getElementById('choiceStats');stats.innerHTML='';[['SURVIVAL',state.survival],['KNOWLEDGE',state.knowledge],['IDENTITY',state.identity]].forEach(([label,val])=>{const item=document.createElement('div');item.className='choice-stat neutral';item.textContent=label+' '+val;stats.appendChild(item)})
 }
 function pick(idx,el){
  if(locked||el.classList.contains('selected'))return;locked=true;
@@ -444,6 +339,7 @@ function pick(idx,el){
   document.getElementById('choiceKicker').textContent='CHOICE RESOLVED';document.getElementById('choiceTitle').textContent=d.name;document.getElementById('choiceText').textContent=d.log;
   const stats=document.getElementById('choiceStats');stats.innerHTML='';
   [['KNOWLEDGE',d.k],['CONNECTION',d.c],['IDENTITY',d.i],['SURVIVAL',survivalDelta]].forEach(([label,val])=>{const item=document.createElement('div');item.className='choice-stat '+(val>0?'positive':val<0?'negative':'neutral');item.textContent=label+' '+(val>0?'+':'')+val;stats.appendChild(item)});
+  if(state.levelRound<level().turns && state.levelRound%2===0){choice.dataset.minigame='signal'}
   if(state.levelRound>=level().turns){
    if(state.level>=LEVELS.length){
     choice.dataset.final='true';
@@ -461,9 +357,10 @@ choice.addEventListener('click',()=>{
  if(choice.dataset.final==='true'){choice.removeAttribute('data-final');choice.classList.remove('show','hide');setTimeout(()=>drawFinalChoice(),260);return}
  if(choice.dataset.levelComplete==='true'){
   choice.removeAttribute('data-level-complete');choice.classList.remove('show','hide');
-  if(choice.dataset.minigame==='maze'){choice.removeAttribute('data-minigame');setTimeout(()=>startCoreMaze(),260);return}
-  cardsEl.classList.add('round-leave');setTimeout(()=>{cardsEl.classList.remove('resolving','round-enter','round-leave');draw()},360);return
+  const sector=LEVELS[state.level-2]?.sector||'SECTOR COMPLETE';
+  showSectorCinematic(sector,()=>{if(choice.dataset.minigame==='maze'){choice.removeAttribute('data-minigame');startCoreMaze();return}cardsEl.classList.add('round-leave');setTimeout(()=>{cardsEl.classList.remove('resolving','round-enter','round-leave');draw()},360)});return
 }
+if(choice.dataset.minigame==='signal'){choice.removeAttribute('data-minigame');choice.classList.remove('show','hide');setTimeout(()=>startSignalGame(),260);return}
  choice.classList.remove('show','hide');cardsEl.classList.add('round-leave');setTimeout(()=>{cardsEl.classList.remove('resolving','round-enter','round-leave');draw()},360)
 });
 const menuScreen=document.getElementById('menuScreen'),tutorial=document.getElementById('tutorial');
