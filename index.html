@@ -382,30 +382,7 @@ function finalEnding(choice){
  if(state.knowledge>=10)return endGame('knowledge');
  return endGame('neutral');
 }
-function drawFinalChoice(){
- locked=false;
- choice.classList.remove('show','hide');
- state.finalReady=true;
- current=[
-  {type:'FINAL',name:'STAY HUMAN',desc:'Close the chamber. Keep Valky outside the last boundary.',k:0,c:0,i:2,final:'human'},
-  {type:'FINAL',name:'ACCEPT SYNCHRONY',desc:'Let Valky enter fully — but keep one human voice separate.',k:0,c:3,i:-1,final:'sync'},
-  {type:'FINAL',name:'OPEN THE CORE',desc:'Remove the final boundary. Become part of the intelligence beneath the world.',k:5,c:5,i:-10,final:'collective',fatal:true},
-  {type:'FINAL',name:'OPEN THE ARCHIVE',desc:'Choose the truth instead of the connection. Learn what happened to humanity.',k:6,c:0,i:0,final:'archive'}
- ];
- cardsEl.innerHTML='';
- document.getElementById('turn').textContent='THE LAST CHOICE · FINAL DECISION';
- document.getElementById('log').textContent='No more sectors. No more preparation. Only a choice.';
- current.forEach((d,idx)=>{
-  const el=document.createElement('div');
-  el.className='card '+(d.fatal?'fatal':'');
-  el.dataset.idx=idx;
-  el.innerHTML=`<div class="face"><div class="art ancient"></div><div class="card-marker ${d.fatal?'fatal':'safe'}">${d.fatal?'◉':'✦'}</div><div class="content"><div class="type">FINAL</div><div class="name">${d.name}</div><div class="desc">${d.desc}</div></div></div>`;
-  el.addEventListener('pointermove',e=>{if(locked)return;const r=el.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;el.style.transform=`rotateY(${x*18}deg) rotateX(${-y*18}deg) translateY(-8px)`});
-  el.addEventListener('pointerleave',()=>{if(!el.classList.contains('selected'))el.style.transform=''});
-  el.addEventListener('click',()=>pickFinal(idx,el));
-  cardsEl.appendChild(el);
- });
-}
+function drawFinalChoice(){locked=false;choice.classList.remove("show","hide");state.finalReady=true;const options=[{type:"FINAL",name:"STAY HUMAN",desc:"Close the chamber. Keep the boundary around your mind.",k:0,c:0,i:2,final:"human",req:true},{type:"FINAL",name:"ACCEPT SYNCHRONY",desc:"Let Valky enter fully while keeping one human voice separate.",k:0,c:3,i:-1,final:"sync",req:state.connection>=7&&state.identity>=4},{type:"FINAL",name:"OPEN THE CORE",desc:"Remove the final boundary and join the intelligence beneath the world.",k:5,c:5,i:-10,final:"collective",fatal:true,req:state.flags.has("inner_door")},{type:"FINAL",name:"OPEN THE ARCHIVE",desc:"Choose knowledge over connection and uncover humanity’s fate.",k:6,c:0,i:0,final:"archive",req:state.knowledge>=10}];current=options;cardsEl.innerHTML="";document.getElementById("turn").textContent="THE LAST CHOICE · FINAL DECISION";document.getElementById("log").textContent="Your previous choices determine which doors are open.";current.forEach((d,idx)=>{const el=document.createElement("div");el.className="card "+(d.fatal?"fatal ":"")+(d.req?"":"disabled");el.dataset.idx=idx;const lockText=d.req?"":"<br><span style=\"font-size:8px;color:#73818d\">LOCKED BY YOUR JOURNEY</span>";el.innerHTML='<div class="face"><div class="art ancient"></div><div class="card-marker '+(d.fatal?"fatal":d.req?"safe":"risk")+'">'+(d.req?(d.fatal?"◉":"✦"):"◈")+'</div><div class="content"><div class="type">FINAL</div><div class="name">'+d.name+'</div><div class="desc">'+d.desc+lockText+'</div></div></div>';if(d.req){el.addEventListener("pointermove",e=>{if(locked)return;const rr=el.getBoundingClientRect(),x=(e.clientX-rr.left)/rr.width-.5,y=(e.clientY-rr.top)/rr.height-.5;el.style.transform="rotateY("+(x*18)+"deg) rotateX("+(-y*18)+"deg) translateY(-8px)"});el.addEventListener("pointerleave",()=>{if(!el.classList.contains("selected"))el.style.transform=""});el.addEventListener("click",()=>pickFinal(idx,el))}cardsEl.appendChild(el)})}
 function pickFinal(idx,el){
  if(locked)return;
  locked=true;
