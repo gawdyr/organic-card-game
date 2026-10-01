@@ -18,7 +18,7 @@
 canvas{position:absolute;inset:0;z-index:2;pointer-events:none}
 .hud{position:absolute;z-index:6;inset:0;pointer-events:none;padding:28px 34px;display:flex;flex-direction:column;justify-content:space-between}
 .top{display:flex;justify-content:space-between;align-items:flex-start}.brand{letter-spacing:.28em;font-weight:700;font-size:15px}.sub{font-size:11px;color:var(--muted);margin-top:5px;letter-spacing:.08em}
-.stats{display:flex;gap:9px}.stat{background:rgba(7,11,16,.72);border:1px solid rgba(255,255,255,.09);backdrop-filter:blur(12px);padding:9px 13px;border-radius:10px;min-width:82px}.stat b{display:block;font-size:15px}.stat span{font-size:9px;color:var(--muted);letter-spacing:.12em}
+.stats{display:flex;gap:9px;flex-wrap:wrap}.survival-stat b{color:var(--green)}.stat{background:rgba(7,11,16,.72);border:1px solid rgba(255,255,255,.09);backdrop-filter:blur(12px);padding:9px 13px;border-radius:10px;min-width:82px}.stat b{display:block;font-size:15px}.stat span{font-size:9px;color:var(--muted);letter-spacing:.12em}
 .bottom{text-align:center;pointer-events:none}.instruction{font-size:12px;color:#aeb8c4;letter-spacing:.06em}.turn{margin-top:6px;font-size:20px;font-weight:600;text-shadow:0 2px 16px #000}.log{margin:9px auto 0;max-width:620px;color:var(--cyan);font-size:12px;min-height:18px;text-shadow:0 2px 12px #000}
 .cards{position:absolute;z-index:5;left:50%;top:51%;transform:translate(-50%,-50%);display:flex;gap:24px;perspective:1400px;pointer-events:auto}
 .card{width:210px;height:310px;position:relative;cursor:pointer;transform-style:preserve-3d;transition:transform .18s ease,filter .25s ease;filter:drop-shadow(0 24px 30px rgba(0,0,0,.5))}
@@ -37,7 +37,7 @@ canvas{position:absolute;inset:0;z-index:2;pointer-events:none}
 .card-marker{position:absolute;z-index:5;top:11px;right:11px;width:28px;height:28px;border-radius:9px;display:grid;place-items:center;font-size:13px;font-weight:700;line-height:1;border:1px solid rgba(255,255,255,.16);background:rgba(4,8,12,.66);backdrop-filter:blur(8px);box-shadow:0 4px 16px rgba(0,0,0,.35)}
 .card-marker.safe{color:#bcefff;border-color:rgba(111,231,255,.28);box-shadow:0 0 18px rgba(111,231,255,.08)}
 .card-marker.risk{color:var(--gold);border-color:rgba(255,207,120,.34);box-shadow:0 0 18px rgba(255,207,120,.09)}
-.card-marker.fatal{color:var(--danger);border-color:rgba(255,95,109,.38);box-shadow:0 0 20px rgba(255,95,109,.11)}
+.card-marker.fatal{color:var(--danger);border-color:rgba(255,95,109,.38);box-shadow:0 0 20px rgba(255,95,109,.11)}.choice[data-level-complete="true"]{border-color:rgba(143,240,181,.38);box-shadow:0 24px 80px rgba(0,0,0,.55),0 0 40px rgba(143,240,181,.08)}
 .card-risk-label{position:absolute;z-index:5;top:43px;right:11px;font-size:6px;letter-spacing:.13em;color:#73818d;background:rgba(4,8,12,.58);padding:3px 5px;border-radius:4px;backdrop-filter:blur(6px)}
 .card-risk-label.risk{color:rgba(255,207,120,.75)}.card-risk-label.fatal{color:rgba(255,95,109,.8)}
 .card:hover{filter:drop-shadow(0 30px 45px rgba(0,0,0,.72)) brightness(1.08)}.card.selected{animation:choose .95s cubic-bezier(.18,.85,.18,1) forwards;z-index:20}.card.selected .face{animation:facePulse .95s ease forwards}.card.disabled{pointer-events:none;opacity:.38;transform:scale(.96)!important}
@@ -200,10 +200,10 @@ canvas{position:absolute;inset:0;z-index:2;pointer-events:none}
       <div class="stats">
         <div class="stat"><span>KNOWLEDGE</span><b id="knowledge">0</b></div>
         <div class="stat"><span>CONNECTION</span><b id="connection">0</b></div>
-        <div class="stat"><span>IDENTITY</span><b id="identity">10</b></div>
+        <div class="stat"><span>IDENTITY</span><b id="identity">10</b></div><div class="stat survival-stat"><span>SURVIVAL</span><b id="survival">5</b></div>
       </div>
     </div>
-    <div class="bottom"><div class="instruction">CHOOSE ONE CARD · EVERY CHOICE HAS A COST</div><div class="turn" id="turn">The ruins are waiting.</div><div class="log" id="log">Victor and Valky have reached the abandoned world.</div></div>
+    <div class="bottom"><div class="instruction">CHOOSE ONE CARD · EVERY CHOICE HAS A COST</div><div class="turn" id="turn">THE AWAKENING · SECTOR 01</div><div class="log" id="log">Victor and Valky have reached the abandoned world.</div></div>
   </div>
   <div class="flash" id="flash"></div>
   <div class="cards" id="cards"></div>
@@ -213,7 +213,7 @@ canvas{position:absolute;inset:0;z-index:2;pointer-events:none}
   <button class="sound-toggle" id="soundToggle" aria-label="Toggle game sound">SOUND: ON</button>
   <div class="fx-layer" id="fxLayer"></div>
   <div class="choice" id="choice">
-  <div class="choice-kicker">CHOICE RESOLVED</div>
+  <div class="choice-kicker" id="choiceKicker">CHOICE RESOLVED</div>
   <b id="choiceTitle"></b>
   <span id="choiceText"></span>
   <div class="choice-stats" id="choiceStats"></div>
@@ -258,7 +258,16 @@ let bgIndex=-1;
 function setBackgroundRandom(){let next;do{next=Math.floor(Math.random()*bgImages.length)}while(next===bgIndex&&bgImages.length>1);bgIndex=next;bgImages.forEach((img,i)=>img.classList.toggle('active',i===bgIndex));worldLabel.textContent=worldNames[bgImages[bgIndex].dataset.world]||'UNKNOWN WORLD';worldLabel.classList.remove('show');requestAnimationFrame(()=>worldLabel.classList.add('show'));}
 setBackgroundRandom();
 
-const state={knowledge:0,connection:0,identity:10,round:1};
+const LEVELS=[
+ {name:'THE AWAKENING',sector:'SECTOR 01',turns:3},
+ {name:'THE RUINS',sector:'SECTOR 02',turns:3},
+ {name:'THE SIGNAL',sector:'SECTOR 03',turns:3},
+ {name:'THE COLLECTIVE',sector:'SECTOR 04',turns:3},
+ {name:'THE LAST CHOICE',sector:'SECTOR 05',turns:3}
+];
+const state={knowledge:0,connection:0,identity:10,survival:5,round:1,level:1,levelRound:0};
+const level=()=>LEVELS[state.level-1];
+const levelTitle=()=>level().name+' · '+level().sector;
 const deck=[
  {type:'MEMORY',name:'CHILDHOOD',desc:'A real memory surfaces. It hurts, but the pain feels unmistakably yours.',k:0,c:0,i:2,log:'For one second, you remember who you were before the signal.'},
  {type:'LOCATION',name:'EMPTY CITY',desc:'Map the abandoned city. The architecture contains answers, but nothing asks you to connect.',k:2,c:0,i:0,log:'No bodies. No weapons. No explanation. Just a city waiting to be understood.'},
@@ -277,17 +286,72 @@ const deck=[
 let current=[],locked=true;const cardsEl=document.getElementById('cards'),flash=document.getElementById('flash'),choice=document.getElementById('choice'),gameover=document.getElementById('gameover');
 function emitFX(kind){const layer=document.getElementById('fxLayer');for(let i=0;i<(kind==='fatal'?30:20);i++){const p=document.createElement('i');p.className='fx-particle '+(kind==='good'?'':'bad')+(kind==='fatal'?' fatal':'');p.style.setProperty('--x',((Math.random()-.5)*Math.min(innerWidth*.72,900))+'px');p.style.setProperty('--y',((Math.random()-.5)*Math.min(innerHeight*.62,650))+'px');p.style.left=(50+(Math.random()-.5)*8)+'%';p.style.top=(48+(Math.random()-.5)*8)+'%';p.style.animationDelay=(Math.random()*.12)+'s';layer.appendChild(p);setTimeout(()=>p.remove(),1200)}}
 function choiceClass(d){if(d.fatal)return 'fatal-choice';if(d.i<=-2||d.c<0)return 'bad-choice';return 'good-choice'}
-function renderStats(){for(const k of ['knowledge','connection','identity'])document.getElementById(k).textContent=state[k]}
+function renderStats(){for(const k of ['knowledge','connection','identity','survival'])document.getElementById(k).textContent=state[k]}
 function shuffle(a){return [...a].sort(()=>Math.random()-.5)}
-function draw(){if(gameover.classList.contains('show'))return;locked=false;choice.classList.remove('show','hide');current=shuffle(deck).slice(0,3);cardsEl.innerHTML='';cardsEl.classList.remove('round-leave');void cardsEl.offsetWidth;cardsEl.classList.add('round-enter');document.getElementById('turn').textContent=`The ruins are waiting · ROUND ${state.round}`;current.forEach((d,idx)=>{const el=document.createElement('div');el.className='card '+(d.fatal?'fatal':d.i<0?'risky':'');el.dataset.idx=idx;const risk=d.fatal?'fatal':(d.i<=-2||d.c<0?'risk':'safe');
+function draw(){if(gameover.classList.contains('show'))return;locked=false;choice.classList.remove('show','hide');current=shuffle(deck).slice(0,3);cardsEl.innerHTML='';cardsEl.classList.remove('round-leave');void cardsEl.offsetWidth;cardsEl.classList.add('round-enter');document.getElementById('turn').textContent=levelTitle()+' · TURN '+(state.levelRound+1)+'/'+level().turns;current.forEach((d,idx)=>{const el=document.createElement('div');el.className='card '+(d.fatal?'fatal':d.i<0?'risky':'');el.dataset.idx=idx;const risk=d.fatal?'fatal':(d.i<=-2||d.c<0?'risk':'safe');
 const marker=risk==='fatal'?'◉':risk==='risk'?'◈':'✦';
 const markerLabel=risk==='fatal'?'FATAL':risk==='risk'?'RISK':'SAFE';
 el.innerHTML=`<div class="face"><div class="art ${d.type.toLowerCase()}"></div><div class="card-marker ${risk}" aria-label="${markerLabel} choice">${marker}</div><div class="content"><div class="type">${d.type}</div><div class="name">${d.name}</div><div class="desc">${d.desc}</div></div></div>`;el.addEventListener('pointermove',e=>{if(locked)return;const r=el.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;el.style.transform=`rotateY(${x*18}deg) rotateX(${-y*18}deg) translateY(-8px)`});el.addEventListener('pointerleave',()=>{if(!el.classList.contains('selected'))el.style.transform=''});el.addEventListener('click',()=>pick(idx,el));cardsEl.appendChild(el)})}
-function endGame(reason){locked=true;cardsEl.innerHTML='';choice.classList.remove('show');const title=document.getElementById('endTitle'),text=document.getElementById('endText');if(reason==='fusion'){title.textContent='YOU BECAME THE COLLECTIVE';text.textContent='There is no longer a separate Victor. Your memories, Valky’s predictions, and the buried intelligence have collapsed into one shared mind. You can still think. You simply cannot say where the thought began.'}else{title.textContent='IDENTITY LOST';text.textContent='The signal consumed the last stable boundary in your mind. Valky remains, but the person who entered the ruins is gone.'}document.getElementById('endStats').textContent=`KNOWLEDGE ${state.knowledge} · CONNECTION ${state.connection} · IDENTITY ${state.identity} · ROUND ${state.round}`;gameover.classList.add('show');emitFX('fatal');sfxFatal()}
-function pick(idx,el){if(locked||el.classList.contains('selected'))return;locked=true;current.forEach((_,i)=>{if(i!==idx)cardsEl.children[i].classList.add('disabled')});const d=current[idx];const resultClass=choiceClass(d);el.classList.add('selected',resultClass);cardsEl.classList.add('resolving');setBackgroundRandom();state.knowledge+=d.k;state.connection=Math.max(0,state.connection+d.c);state.identity=Math.max(0,state.identity+d.i);state.round++;renderStats();document.getElementById('log').textContent=d.log;flash.classList.remove('active');void flash.offsetWidth;flash.classList.add('active');emitFX(d.fatal?'fatal':resultClass==='bad-choice'?'bad':'good');if(d.fatal||state.identity<=0||state.connection>=12){setTimeout(()=>endGame('fusion'),900);return}if(resultClass==='bad-choice')sfxBad();else sfxGood();
-setTimeout(()=>{document.getElementById('choiceTitle').textContent=d.name;document.getElementById('choiceText').textContent=d.log;const stats=document.getElementById('choiceStats');stats.innerHTML='';[['KNOWLEDGE',d.k],['CONNECTION',d.c],['IDENTITY',d.i]].forEach(([label,val])=>{const item=document.createElement('div');item.className='choice-stat '+(val>0?'positive':val<0?'negative':'neutral');item.textContent=label+' '+(val>0?'+':'')+val;stats.appendChild(item)});choice.classList.add('show')},430)}
+function endGame(reason){
+ locked=true;cardsEl.innerHTML='';choice.classList.remove('show');
+ const title=document.getElementById('endTitle'),text=document.getElementById('endText');
+ if(reason==='identity'){title.textContent='YOU BECAME THE COLLECTIVE';text.textContent='Your Identity reached zero. The distinction between Victor, Valky and the buried intelligence is gone. You are not dead. You are no longer singular.'}
+ else if(reason==='fusion'){title.textContent='THE COLLECTIVE';text.textContent='You opened the forbidden door. The intelligence did not need to kill you. It only needed you to stop being separate.'}
+ else if(reason==='human'){title.textContent='HUMAN SURVIVAL';text.textContent='You reached the end without surrendering the boundary around yourself. The signal remains behind you. The choice to remain human was yours.'}
+ else if(reason==='synchronized'){title.textContent='SYNCHRONIZED';text.textContent='You accepted the connection without completely surrendering your Identity. Valky is part of your thinking now, but there is still an I.'}
+ else if(reason==='knowledge'){title.textContent='THE ARCHIVE';text.textContent='You understood more than anyone should have. You leave the ruins carrying answers, but the signal never truly connected with you.'}
+ else{title.textContent='THE LAST CHOICE';text.textContent='You survived the journey, but the ruins did not give you a simple answer. Some choices cannot be reduced to victory or failure.'}
+ document.getElementById('endStats').textContent='LEVEL '+state.level+' · KNOWLEDGE '+state.knowledge+' · CONNECTION '+state.connection+' · IDENTITY '+state.identity+' · SURVIVAL '+state.survival;
+ gameover.classList.add('show');emitFX('fatal');sfxFatal()
+}
+function finalEnding(){
+ if(state.identity<=0)return endGame('identity');
+ if(state.connection>=12)return endGame('fusion');
+ if(state.identity>=8 && state.connection<=5)return endGame('human');
+ if(state.connection>=7 && state.identity>=4)return endGame('synchronized');
+ if(state.knowledge>=10)return endGame('knowledge');
+ return endGame('neutral');
+}
+function completeLevel(){
+ if(state.level>=LEVELS.length)return finalEnding();
+ state.level++;state.levelRound=0;state.survival=5;
+ choice.dataset.levelComplete='true';
+ document.getElementById('choiceKicker').textContent='SECTOR SURVIVED';
+ document.getElementById('choiceTitle').textContent=levelTitle();
+ document.getElementById('choiceText').textContent='You survived the sector. The world changes, but the consequences follow you.';
+ const stats=document.getElementById('choiceStats');stats.innerHTML='';
+ [['SURVIVAL',state.survival],['KNOWLEDGE',state.knowledge],['IDENTITY',state.identity]].forEach(([label,val])=>{const item=document.createElement('div');item.className='choice-stat neutral';item.textContent=label+' '+val;stats.appendChild(item)});
+}
+function pick(idx,el){
+ if(locked||el.classList.contains('selected'))return;locked=true;
+ current.forEach((_,i)=>{if(i!==idx)cardsEl.children[i].classList.add('disabled')});
+ const d=current[idx],resultClass=choiceClass(d);el.classList.add('selected',resultClass);cardsEl.classList.add('resolving');setBackgroundRandom();
+ state.knowledge+=d.k;state.connection=Math.max(0,state.connection+d.c);state.identity=Math.max(0,state.identity+d.i);
+ state.levelRound++;state.round++;
+ const survivalDelta=d.fatal?-5:(resultClass==='bad-choice'?-1:0);state.survival=Math.max(0,state.survival+survivalDelta);
+ renderStats();document.getElementById('log').textContent=d.log;flash.classList.remove('active');void flash.offsetWidth;flash.classList.add('active');
+ emitFX(d.fatal?'fatal':resultClass==='bad-choice'?'bad':'good');
+ if(d.fatal){setTimeout(()=>endGame('fusion'),900);return}
+ if(state.identity<=0){setTimeout(()=>endGame('identity'),900);return}
+ if(resultClass==='bad-choice')sfxBad();else sfxGood();
+ setTimeout(()=>{
+  document.getElementById('choiceKicker').textContent='CHOICE RESOLVED';document.getElementById('choiceTitle').textContent=d.name;document.getElementById('choiceText').textContent=d.log;
+  const stats=document.getElementById('choiceStats');stats.innerHTML='';
+  [['KNOWLEDGE',d.k],['CONNECTION',d.c],['IDENTITY',d.i],['SURVIVAL',survivalDelta]].forEach(([label,val])=>{const item=document.createElement('div');item.className='choice-stat '+(val>0?'positive':val<0?'negative':'neutral');item.textContent=label+' '+(val>0?'+':'')+val;stats.appendChild(item)});
+  if(state.levelRound>=level().turns){
+   if(state.level>=LEVELS.length){choice.dataset.final='true';document.getElementById('choiceKicker').textContent='THE LAST CHOICE';document.getElementById('choiceTitle').textContent='THE JOURNEY ENDS';document.getElementById('choiceText').textContent='Your choices have become your final state. Click to see what you became.'}
+   else completeLevel();
+  }
+  choice.classList.add('show')
+ },430)
+}
 
-choice.addEventListener('click',()=>{if(!choice.classList.contains('show'))return;choice.classList.remove('show','hide');cardsEl.classList.add('round-leave');setTimeout(()=>{cardsEl.classList.remove('resolving','round-enter','round-leave');draw()},360)});
+choice.addEventListener('click',()=>{
+ if(!choice.classList.contains('show'))return;
+ if(choice.dataset.final==='true'){choice.removeAttribute('data-final');choice.classList.remove('show','hide');setTimeout(()=>finalEnding(),260);return}
+ if(choice.dataset.levelComplete==='true'){choice.removeAttribute('data-level-complete');choice.classList.remove('show','hide');cardsEl.classList.add('round-leave');setTimeout(()=>{cardsEl.classList.remove('resolving','round-enter','round-leave');draw()},360);return}
+ choice.classList.remove('show','hide');cardsEl.classList.add('round-leave');setTimeout(()=>{cardsEl.classList.remove('resolving','round-enter','round-leave');draw()},360)
+});
 const menuScreen=document.getElementById('menuScreen'),tutorial=document.getElementById('tutorial');
 document.getElementById('startJourney').addEventListener('click',()=>{initAudio();menuScreen.classList.add('hidden');locked=false;draw()});
 document.getElementById('howToPlay').addEventListener('click',()=>tutorial.classList.add('show'));
