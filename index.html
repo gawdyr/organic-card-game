@@ -241,7 +241,20 @@ canvas{position:absolute;inset:0;z-index:2;pointer-events:none}
   <div class="choice-stats" id="choiceStats"></div>
   <div class="next-round" id="nextRound">CLICK TO CONTINUE</div>
 </div>
-  <div class="gameover" id="gameover">
+  <div id="minigame" class="minigame" aria-hidden="true">
+  <div class="minigame-panel">
+    <div class="minigame-eyebrow">BETWEEN SECTORS · SYSTEM RESTORE</div>
+    <h2>RESTORE THE SHELTER</h2>
+    <p class="minigame-sub">The shelter is losing power. Connect POWER to CORE by linking three nodes. Or let Valky solve it.</p>
+    <div id="restoreGrid" class="restore-grid"></div>
+    <div class="restore-actions">
+      <button id="restoreReset">RESET PATH</button>
+      <button id="restoreValky" class="alt">LET VALKY SOLVE</button>
+    </div>
+    <div id="restoreStatus" class="restore-status">Select POWER to begin.</div>
+  </div>
+</div>
+<div class="gameover" id="gameover">
     <div class="panel">
       <div class="eyebrow">ORGANIC · TERMINAL STATE</div>
       <h1 id="endTitle">THE COLLECTIVE</h1>
