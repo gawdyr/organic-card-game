@@ -61,6 +61,28 @@ canvas{position:absolute;inset:0;z-index:2;pointer-events:none}
 .gameover{position:absolute;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at center,rgba(42,0,7,.18),rgba(0,0,0,.86));opacity:0;pointer-events:none;transition:.8s}.gameover.show{opacity:1;pointer-events:auto}.gameover .panel{width:min(620px,calc(100% - 36px));padding:34px 36px;border:1px solid rgba(255,95,109,.35);border-radius:18px;background:rgba(5,7,10,.88);backdrop-filter:blur(18px);box-shadow:0 30px 100px rgba(0,0,0,.65);text-align:center}.gameover .eyebrow{font-size:10px;letter-spacing:.3em;color:var(--danger)}.gameover h1{margin:10px 0 8px;font-size:30px}.gameover p{margin:0 auto;color:#adb7c1;line-height:1.6;max-width:510px;font-size:13px}.gameover .statsEnd{margin:18px 0;color:#707d89;font-size:10px;letter-spacing:.14em}.restart{margin-top:18px;border:1px solid rgba(111,231,255,.35);background:rgba(111,231,255,.08);color:var(--text);padding:11px 18px;border-radius:10px;cursor:pointer;font:inherit}.restart:hover{background:rgba(111,231,255,.15)}
 @media(max-width:800px){.cards{gap:8px}.card{width:150px;height:225px}.name{font-size:14px}.desc{font-size:9px}.stats{display:none}.hud{padding:18px}.bottom{margin-bottom:5px}.world-label{left:18px;bottom:100px}}
 
+/* --- MINI-GAME: SYSTEM RESTORE --- */
+.minigame{position:absolute;inset:0;z-index:18;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at center,rgba(4,18,25,.34),rgba(0,0,0,.82));opacity:0;pointer-events:none;transition:.45s ease}
+.minigame.show{opacity:1;pointer-events:auto}
+.minigame-panel{width:min(760px,calc(100% - 36px));padding:28px;border:1px solid rgba(111,231,255,.28);border-radius:18px;background:rgba(5,9,13,.92);backdrop-filter:blur(18px);box-shadow:0 30px 100px rgba(0,0,0,.7);text-align:center}
+.minigame-eyebrow{font-size:9px;letter-spacing:.3em;color:var(--cyan)}
+.minigame h2{margin:9px 0 6px;font-size:25px}
+.minigame-sub{margin:0 auto 20px;max-width:570px;color:#aeb8c4;font-size:12px;line-height:1.5}
+.restore-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;max-width:600px;margin:0 auto 20px}
+.restore-node{height:68px;border:1px solid rgba(255,255,255,.13);border-radius:10px;background:rgba(255,255,255,.025);color:#aeb8c4;font-size:9px;letter-spacing:.1em;cursor:pointer;transition:.18s;position:relative}
+.restore-node:hover{border-color:rgba(111,231,255,.45);background:rgba(111,231,255,.07);color:#e8edf2}
+.restore-node.power{border-color:rgba(255,207,120,.32);color:var(--gold)}
+.restore-node.core{border-color:rgba(111,231,255,.45);color:var(--cyan)}
+.restore-node.connected{background:rgba(111,231,255,.09);box-shadow:0 0 22px rgba(111,231,255,.08)}
+.restore-node.connected::after{content:'LINKED';position:absolute;bottom:6px;left:0;right:0;font-size:6px;color:var(--cyan);letter-spacing:.18em}
+.restore-actions{display:flex;justify-content:center;gap:10px;flex-wrap:wrap}
+.restore-actions button{border:1px solid rgba(111,231,255,.3);background:rgba(111,231,255,.06);color:var(--text);padding:10px 15px;border-radius:9px;cursor:pointer;font:600 9px/1 Inter,system-ui,sans-serif;letter-spacing:.13em}
+.restore-actions button:hover{background:rgba(111,231,255,.12);border-color:rgba(111,231,255,.55)}
+.restore-actions button.alt{border-color:rgba(255,207,120,.3);color:#f0d79d}
+.restore-status{min-height:18px;margin-top:14px;font-size:10px;color:#8794a1;letter-spacing:.08em}
+.restore-status.good{color:var(--green)}.restore-status.bad{color:var(--danger)}
+@media(max-width:700px){.restore-grid{grid-template-columns:repeat(2,1fr)}.restore-node{height:58px}}
+
 /* --- ORGANIC: MENU / TUTORIAL / ATMOSPHERE / CARD ART UPGRADE --- */
 .ambient-scene{position:absolute;inset:0;z-index:1;pointer-events:none;overflow:hidden;mix-blend-mode:screen;opacity:.9}
 .ambient-scene .nebula{position:absolute;inset:-20%;background:
@@ -329,6 +351,50 @@ function sectorDeck(){
 
 function setFlag(flag){if(flag)state.flags.add(flag);}
 
+let restoreGame=null;
+const minigame=document.getElementById('minigame'),restoreGrid=document.getElementById('restoreGrid'),restoreStatus=document.getElementById('restoreStatus');
+function startSystemRestore(){
+  locked=true; restoreGame={size:5,path:[],solved:false,usedValky:false};
+  const nodes=['POWER','A','B','C','CORE','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W'];
+  const shuffled=shuffle(nodes.slice(1)); const order=[nodes[0],...shuffled.slice(0,3),'CORE',...shuffled.slice(3)];
+  restoreGrid.innerHTML='';
+  order.forEach((name,i)=>{
+    const b=document.createElement('button'); b.className='restore-node '+(name==='POWER'?'power':name==='CORE'?'core':'');
+    b.textContent=name;b.dataset.name=name;b.dataset.index=i;
+    b.addEventListener('click',()=>restorePick(name,b));restoreGrid.appendChild(b);
+  });
+  restoreStatus.className='restore-status';restoreStatus.textContent='Select POWER to begin.';
+  minigame.classList.add('show');minigame.setAttribute('aria-hidden','false');
+}
+function restorePick(name,el){
+  if(!restoreGame||restoreGame.solved)return;
+  const path=restoreGame.path;
+  if(name==='POWER'&&path.length===0){path.push(name);el.classList.add('connected');restoreStatus.textContent='POWER online. Find the CORE path.';return}
+  if(path.length===0){restoreStatus.textContent='Start at POWER.';return}
+  if(name==='CORE'){
+    if(path.length>=4){path.push(name);el.classList.add('connected');restoreGame.solved=true;restoreStatus.className='restore-status good';restoreStatus.textContent='CORE restored. Shelter systems online.';setTimeout(()=>finishSystemRestore(true),650)}
+    else {restoreStatus.className='restore-status bad';restoreStatus.textContent='The path is incomplete. Reach the CORE after linking three nodes.'}
+    return;
+  }
+  if(name==='POWER'){return}
+  if(path.includes(name)){restoreStatus.className='restore-status bad';restoreStatus.textContent='That node is already linked.';return}
+  path.push(name);el.classList.add('connected');
+  restoreStatus.className='restore-status';restoreStatus.textContent=path.length>=4?'CORE is ready. Complete the connection.':'Node linked. Continue.';
+}
+function resetSystemRestore(){if(!restoreGame)return;restoreGame.path=[];restoreGame.solved=false;restoreGrid.querySelectorAll('.restore-node').forEach(x=>x.classList.remove('connected'));restoreStatus.className='restore-status';restoreStatus.textContent='Select POWER to begin.'}
+function finishSystemRestore(success,viaValky=false){
+  if(!restoreGame)return;
+  const used=viaValky||restoreGame.usedValky;
+  minigame.classList.remove('show');minigame.setAttribute('aria-hidden','true');restoreGame=null;
+  if(success){
+    state.survival=Math.min(5,state.survival+1);state.knowledge+=used?0:2;state.connection+=used?1:0;state.identity=Math.max(0,state.identity-(used?1:0));
+    renderStats();document.getElementById('log').textContent=used?'Valky restored the shelter before you touched the system.':'You restored the shelter manually. The system remembers that you did.';
+  }else{
+    state.survival=Math.max(0,state.survival-1);renderStats();document.getElementById('log').textContent='The shelter remains unstable. You lose precious time and supplies.';
+  }
+  setTimeout(()=>draw(),450);
+}
+
 let current=[],locked=true;const cardsEl=document.getElementById('cards'),flash=document.getElementById('flash'),choice=document.getElementById('choice'),gameover=document.getElementById('gameover');
 function emitFX(kind){const layer=document.getElementById('fxLayer');for(let i=0;i<(kind==='fatal'?30:20);i++){const p=document.createElement('i');p.className='fx-particle '+(kind==='good'?'':'bad')+(kind==='fatal'?' fatal':'');p.style.setProperty('--x',((Math.random()-.5)*Math.min(innerWidth*.72,900))+'px');p.style.setProperty('--y',((Math.random()-.5)*Math.min(innerHeight*.62,650))+'px');p.style.left=(50+(Math.random()-.5)*8)+'%';p.style.top=(48+(Math.random()-.5)*8)+'%';p.style.animationDelay=(Math.random()*.12)+'s';layer.appendChild(p);setTimeout(()=>p.remove(),1200)}}
 function choiceClass(d){if(d.fatal)return 'fatal-choice';if(d.i<=-2||d.c<0)return 'bad-choice';return 'good-choice'}
@@ -405,6 +471,18 @@ function pickFinal(idx,el){
  setTimeout(()=>finalEnding(d.final),850);
 }
 function completeLevel(){
+ if(state.level===1){
+   state.level++;state.levelRound=0;state.survival=5;state.finalReady=false;
+   choice.dataset.levelComplete='true';
+   document.getElementById('choiceKicker').textContent='SECTOR SURVIVED';
+   document.getElementById('choiceTitle').textContent=levelTitle();
+   document.getElementById('choiceText').textContent='The shelter holds. Before entering the ruins, something between the sectors still needs to be restored.';
+   const stats=document.getElementById('choiceStats');stats.innerHTML='';
+   [['SURVIVAL',state.survival],['KNOWLEDGE',state.knowledge],['IDENTITY',state.identity]].forEach(([label,val])=>{const item=document.createElement('div');item.className='choice-stat neutral';item.textContent=label+' '+val;stats.appendChild(item)});
+   choice.dataset.minigame='restore';
+   return;
+ }
+
  if(state.level>=LEVELS.length)return finalEnding();
  state.level++;state.levelRound=0;state.survival=5;state.finalReady=false;
  choice.dataset.levelComplete='true';
@@ -447,7 +525,11 @@ function pick(idx,el){
 choice.addEventListener('click',()=>{
  if(!choice.classList.contains('show'))return;
  if(choice.dataset.final==='true'){choice.removeAttribute('data-final');choice.classList.remove('show','hide');setTimeout(()=>drawFinalChoice(),260);return}
- if(choice.dataset.levelComplete==='true'){choice.removeAttribute('data-level-complete');choice.classList.remove('show','hide');cardsEl.classList.add('round-leave');setTimeout(()=>{cardsEl.classList.remove('resolving','round-enter','round-leave');draw()},360);return}
+ if(choice.dataset.levelComplete==='true'){
+  choice.removeAttribute('data-level-complete');choice.classList.remove('show','hide');
+  if(choice.dataset.minigame==='restore'){choice.removeAttribute('data-minigame');setTimeout(()=>startSystemRestore(),260);return}
+  cardsEl.classList.add('round-leave');setTimeout(()=>{cardsEl.classList.remove('resolving','round-enter','round-leave');draw()},360);return
+}
  choice.classList.remove('show','hide');cardsEl.classList.add('round-leave');setTimeout(()=>{cardsEl.classList.remove('resolving','round-enter','round-leave');draw()},360)
 });
 const menuScreen=document.getElementById('menuScreen'),tutorial=document.getElementById('tutorial');
@@ -456,6 +538,8 @@ document.getElementById('howToPlay').addEventListener('click',()=>tutorial.class
 document.getElementById('closeTutorial').addEventListener('click',()=>tutorial.classList.remove('show'));
 tutorial.addEventListener('click',e=>{if(e.target===tutorial)tutorial.classList.remove('show')});
 document.getElementById('restart').addEventListener('click',()=>location.reload());
+document.getElementById('restoreReset').addEventListener('click',resetSystemRestore);
+document.getElementById('restoreValky').addEventListener('click',()=>{if(!restoreGame)return;restoreGame.usedValky=true;restoreStatus.className='restore-status good';restoreStatus.textContent='Valky is taking control...';setTimeout(()=>finishSystemRestore(true,true),700)});
 renderStats();
 function animate(t){requestAnimationFrame(animate);core.rotation.x=t*.00008;core.rotation.y=t*.00012;glow.intensity=2.7+Math.sin(t*.0015)*.35;renderer.render(scene,camera)}animate(0);
 addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)});
