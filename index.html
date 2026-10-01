@@ -334,7 +334,7 @@ function setFlag(flag){if(flag)state.flags.add(flag);}
 
 let mazeGame=null;
 const minigame=document.getElementById("minigame"),mazeEl=document.getElementById("maze"),mazeStatus=document.getElementById("mazeStatus");
-function mazePath(size){const g=Array.from({length:size},()=>Array(size).fill(1)),stack=[[0,0]];g[0][0]=0;while(stack.length){const cur=stack[stack.length-1],r=cur[0],c=cur[1],dirs=shuffle([[2,0],[-2,0],[0,2],[0,-2]]);let moved=false;for(const d of dirs){const nr=r+d[0],nc=c+d[1];if(nr>0&&nr<size-1&&nc>0&&nc<size-1&&g[nr][nc]){g[r+d[0]/2][c+d[1]/2]=0;g[nr][nc]=0;stack.push([nr,nc]);moved=true;break}}if(!moved)stack.pop()}g[size-1][size-1]=0;return g}
+function mazePath(size){const g=Array.from({length:size},()=>Array(size).fill(1)),stack=[[1,1]];g[1][1]=0;while(stack.length){const cur=stack[stack.length-1],r=cur[0],c=cur[1],dirs=shuffle([[2,0],[-2,0],[0,2],[0,-2]]);let moved=false;for(const d of dirs){const nr=r+d[0],nc=c+d[1];if(nr>0&&nr<size-1&&nc>0&&nc<size-1&&g[nr][nc]){g[r+d[0]/2][c+d[1]/2]=0;g[nr][nc]=0;stack.push([nr,nc]);moved=true;break}}if(!moved)stack.pop()}g[0][0]=0;g[0][1]=0;g[size-1][size-1]=0;g[size-1][size-2]=0;return g}
 function startCoreMaze(){locked=true;const sizes=state.level===1?[9,11]:state.level===2?[11,13]:state.level===3?[13,15]:[15,17],size=sizes[Math.floor(Math.random()*sizes.length)];mazeGame={size,grid:mazePath(size),r:0,c:0,done:false};document.getElementById("mazeEyebrow").textContent="BETWEEN SECTORS · CORE MAZE · "+level().sector;document.getElementById("mazeTitle").textContent=state.level===4?"NEURAL LABYRINTH":"REACH THE CORE";drawMaze();minigame.classList.add("show");minigame.setAttribute("aria-hidden","false")}
 function drawMaze(){const m=mazeGame;mazeEl.innerHTML="";mazeEl.style.gridTemplateColumns="repeat("+m.size+",1fr)";for(let r=0;r<m.size;r++)for(let c=0;c<m.size;c++){const b=document.createElement("div"),wall=m.grid[r][c]===1;b.className="maze-cell "+(wall?"wall ":"")+(r===m.size-1&&c===m.size-1?"core ":"")+(r===m.r&&c===m.c?"player":"");mazeEl.appendChild(b)}}
 function moveMaze(dr,dc){const m=mazeGame;if(!m||m.done)return;const nr=m.r+dr,nc=m.c+dc;if(nr<0||nc<0||nr>=m.size||nc>=m.size||m.grid[nr][nc]){mazeStatus.className="maze-status bad";mazeStatus.textContent="Blocked. Find another route.";return}m.r=nr;m.c=nc;mazeStatus.className="maze-status";mazeStatus.textContent="Signal stable. Keep moving.";drawMaze();if(m.r===m.size-1&&m.c===m.size-1){m.done=true;mazeStatus.className="maze-status good";mazeStatus.textContent="CORE REACHED. Sector transition unlocked.";setTimeout(()=>finishCoreMaze(true),500)}}
@@ -342,6 +342,16 @@ function finishCoreMaze(success,viaValky=false){if(!mazeGame)return;mazeGame=nul
 function resetCoreMaze(){startCoreMaze()}
 function handleMazeKey(e){if(!minigame.classList.contains("show"))return;const k=e.key.toLowerCase(),map={arrowup:[-1,0],w:[-1,0],arrowdown:[1,0],s:[1,0],arrowleft:[0,-1],a:[0,-1],arrowright:[0,1],d:[0,1]};if(map[k]){e.preventDefault();moveMaze(map[k][0],map[k][1])}}
 addEventListener("keydown",handleMazeKey);
+document.querySelectorAll(".maze-controls [data-move]").forEach(btn=>btn.addEventListener("click",()=>{const moves={up:[-1,0],left:[0,-1],down:[1,0],right:[0,1]};const m=moves[btn.dataset.move];if(m)moveMaze(m[0],m[1])}));
+document.getElementById("mazeReset").addEventListener("click",resetCoreMaze);
+document.getElementById("mazeValky").addEventListener("click",()=>{
+ const m=mazeGame;if(!m||m.done)return;
+ const q=[[m.r,m.c]],prev=new Map(),seen=new Set([m.r+","+m.c]),goal=(m.size-1)+","+(m.size-1),dirs=[[1,0],[-1,0],[0,1],[0,-1]];
+ while(q.length&&!seen.has(goal)){const [r,c]=q.shift();for(const [dr,dc] of dirs){const nr=r+dr,nc=c+dc,key=nr+","+nc;if(nr>=0&&nc>=0&&nr<m.size&&nc<m.size&&m.grid[nr][nc]===0&&!seen.has(key)){seen.add(key);prev.set(key,[r,c]);q.push([nr,nc]);}}}
+ if(!seen.has(goal))return;
+ const path=[];let cur=goal;while(cur!==m.r+","+m.c){const [r,c]=cur.split(",").map(Number);path.push([r,c]);const p=prev.get(cur);cur=p[0]+","+p[1]}path.reverse();
+ let i=0;const step=()=>{if(!mazeGame||mazeGame.done||i>=path.length)return;const [nr,nc]=path[i++];moveMaze(nr-m.r,nc-m.c);if(i<path.length)setTimeout(step,90)};step();
+});
 let current=[],locked=true;const cardsEl=document.getElementById('cards'),flash=document.getElementById('flash'),choice=document.getElementById('choice'),gameover=document.getElementById('gameover');
 function emitFX(kind){const layer=document.getElementById('fxLayer');for(let i=0;i<(kind==='fatal'?30:20);i++){const p=document.createElement('i');p.className='fx-particle '+(kind==='good'?'':'bad')+(kind==='fatal'?' fatal':'');p.style.setProperty('--x',((Math.random()-.5)*Math.min(innerWidth*.72,900))+'px');p.style.setProperty('--y',((Math.random()-.5)*Math.min(innerHeight*.62,650))+'px');p.style.left=(50+(Math.random()-.5)*8)+'%';p.style.top=(48+(Math.random()-.5)*8)+'%';p.style.animationDelay=(Math.random()*.12)+'s';layer.appendChild(p);setTimeout(()=>p.remove(),1200)}}
 function choiceClass(d){if(d.fatal)return 'fatal-choice';if(d.i<=-2||d.c<0)return 'bad-choice';return 'good-choice'}
