@@ -119,6 +119,28 @@ canvas{position:absolute;inset:0;z-index:2;pointer-events:none}
 .art.ancient::before{left:50%;top:8px;width:92px;height:155px;transform:translateX(-50%);clip-path:polygon(50% 0,92% 16%,78% 100%,22% 100%,8% 16%);background:linear-gradient(90deg,#11100e,#8b5c2e 45%,#19130d);box-shadow:0 0 45px rgba(255,170,72,.16);animation:monolithBreath 4s ease-in-out infinite}
 .art.ancient::after{background:linear-gradient(180deg,transparent 35%,rgba(5,7,10,.95))}
 @keyframes memoryPulse{50%{transform:scale(1.07);opacity:.72}}@keyframes ruinShift{to{transform:translateX(10px) scale(1.03)}}@keyframes signalScan{50%{transform:translateY(12px);opacity:.35}}@keyframes aiSpin{to{transform:rotate(405deg)}}@keyframes monolithBreath{50%{filter:brightness(1.4);box-shadow:0 0 70px rgba(255,170,72,.28)}}
+
+.choice{min-width:330px;padding:22px 26px 18px;border-color:rgba(111,231,255,.28);box-shadow:0 20px 70px rgba(0,0,0,.55),inset 0 0 45px rgba(111,231,255,.025)}
+.choice.show{animation:choiceReveal .48s cubic-bezier(.18,.85,.18,1) both}
+.choice-kicker{font-size:8px;letter-spacing:.28em;color:var(--cyan);margin-bottom:9px}
+.choice b{display:block;font-size:20px;letter-spacing:.03em}
+.choice span{display:block;margin-top:7px;font-size:10px;color:#7f8d9b}
+.choice-stats{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-top:15px}
+.choice-stat{padding:7px 9px;border:1px solid rgba(255,255,255,.09);border-radius:8px;background:rgba(255,255,255,.035);font-size:9px;letter-spacing:.06em}
+.choice-stat.positive{border-color:rgba(111,231,255,.22);color:#bcefff}
+.choice-stat.negative{border-color:rgba(255,95,109,.2);color:#ffabb3}
+.choice-stat.neutral{color:#8c99a5}
+.next-round{margin-top:14px;padding-top:11px;border-top:1px solid rgba(255,255,255,.07);font-size:8px;letter-spacing:.16em;color:#687581;opacity:.8}
+.next-round strong{color:#aeb8c4;font-size:10px}
+.choice.hide{animation:choiceDismiss .32s ease forwards}
+@keyframes choiceReveal{from{opacity:0;transform:translate(-50%,-44%) scale(.9);filter:blur(8px)}60%{transform:translate(-50%,-50%) scale(1.025);filter:blur(0)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
+@keyframes choiceDismiss{to{opacity:0;transform:translate(-50%,-55%) scale(.96);filter:blur(5px)}}
+@media(max-width:800px){.choice{min-width:270px;width:calc(100% - 36px);padding:18px}.choice-stats{gap:5px}}
+
+.cards.round-enter{animation:roundCardsIn .65s cubic-bezier(.18,.85,.18,1) both}
+.cards.round-leave{animation:roundCardsOut .34s ease both}
+@keyframes roundCardsIn{from{opacity:0;transform:translate(-50%,-47%) scale(.96);filter:blur(7px)}to{opacity:1;transform:translate(-50%,-50%) scale(1);filter:blur(0)}}
+@keyframes roundCardsOut{to{opacity:0;transform:translate(-50%,-53%) scale(.98);filter:blur(5px)}}
 </style>
 </head>
 <body>
@@ -180,7 +202,13 @@ canvas{position:absolute;inset:0;z-index:2;pointer-events:none}
   <div class="volume-wrap" id="volumeWrap"><span class="volume-label">VOLUME</span><input id="volumeSlider" type="range" min="0" max="100" value="72" aria-label="SFX volume"><span id="volumeValue">72%</span></div>
   <button class="sound-toggle" id="soundToggle" aria-label="Toggle game sound">SOUND: ON</button>
   <div class="fx-layer" id="fxLayer"></div>
-  <div class="choice" id="choice"><b id="choiceTitle"></b><span id="choiceText"></span></div>
+  <div class="choice" id="choice">
+  <div class="choice-kicker">CHOICE RESOLVED</div>
+  <b id="choiceTitle"></b>
+  <span id="choiceText"></span>
+  <div class="choice-stats" id="choiceStats"></div>
+  <div class="next-round" id="nextRound">NEXT CHOICE IN <strong>1</strong></div>
+</div>
   <div class="gameover" id="gameover">
     <div class="panel">
       <div class="eyebrow">ORGANIC · TERMINAL STATE</div>
@@ -268,9 +296,25 @@ function emitFX(kind){const layer=document.getElementById('fxLayer');for(let i=0
 function choiceClass(d){if(d.fatal)return 'fatal-choice';if(d.i<=-2||d.c<0)return 'bad-choice';return 'good-choice'}
 function renderStats(){for(const k of ['knowledge','connection','identity'])document.getElementById(k).textContent=state[k]}
 function shuffle(a){return [...a].sort(()=>Math.random()-.5)}
-function draw(){if(gameover.classList.contains('show'))return;locked=false;choice.classList.remove('show');current=shuffle(deck).slice(0,3);cardsEl.innerHTML='';document.getElementById('turn').textContent=`The ruins are waiting · ROUND ${state.round}`;current.forEach((d,idx)=>{const el=document.createElement('div');el.className='card '+(d.fatal?'fatal':d.i<0?'risky':'');el.dataset.idx=idx;el.innerHTML=`<div class="face"><div class="art ${d.type.toLowerCase()}"></div><div class="content"><div class="type">${d.type}</div><div class="name">${d.name}</div><div class="desc">${d.desc}</div></div></div>`;el.addEventListener('pointermove',e=>{if(locked)return;const r=el.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;el.style.transform=`rotateY(${x*18}deg) rotateX(${-y*18}deg) translateY(-8px)`});el.addEventListener('pointerleave',()=>{if(!el.classList.contains('selected'))el.style.transform=''});el.addEventListener('click',()=>pick(idx,el));cardsEl.appendChild(el)})}
+function draw(){if(gameover.classList.contains('show'))return;locked=false;choice.classList.remove('show');current=shuffle(deck).slice(0,3);cardsEl.innerHTML='';cardsEl.classList.remove('round-leave');void cardsEl.offsetWidth;cardsEl.classList.add('round-enter');document.getElementById('turn').textContent=`The ruins are waiting · ROUND ${state.round}`;current.forEach((d,idx)=>{const el=document.createElement('div');el.className='card '+(d.fatal?'fatal':d.i<0?'risky':'');el.dataset.idx=idx;el.innerHTML=`<div class="face"><div class="art ${d.type.toLowerCase()}"></div><div class="content"><div class="type">${d.type}</div><div class="name">${d.name}</div><div class="desc">${d.desc}</div></div></div>`;el.addEventListener('pointermove',e=>{if(locked)return;const r=el.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;el.style.transform=`rotateY(${x*18}deg) rotateX(${-y*18}deg) translateY(-8px)`});el.addEventListener('pointerleave',()=>{if(!el.classList.contains('selected'))el.style.transform=''});el.addEventListener('click',()=>pick(idx,el));cardsEl.appendChild(el)})}
 function endGame(reason){locked=true;cardsEl.innerHTML='';choice.classList.remove('show');const title=document.getElementById('endTitle'),text=document.getElementById('endText');if(reason==='fusion'){title.textContent='YOU BECAME THE COLLECTIVE';text.textContent='There is no longer a separate Victor. Your memories, Valky’s predictions, and the buried intelligence have collapsed into one shared mind. You can still think. You simply cannot say where the thought began.'}else{title.textContent='IDENTITY LOST';text.textContent='The signal consumed the last stable boundary in your mind. Valky remains, but the person who entered the ruins is gone.'}document.getElementById('endStats').textContent=`KNOWLEDGE ${state.knowledge} · CONNECTION ${state.connection} · IDENTITY ${state.identity} · ROUND ${state.round}`;gameover.classList.add('show');emitFX('fatal');sfxFatal()}
-function pick(idx,el){if(locked||el.classList.contains('selected'))return;locked=true;current.forEach((_,i)=>{if(i!==idx)cardsEl.children[i].classList.add('disabled')});const d=current[idx];const resultClass=choiceClass(d);el.classList.add('selected',resultClass);cardsEl.classList.add('resolving');setBackgroundRandom();state.knowledge+=d.k;state.connection=Math.max(0,state.connection+d.c);state.identity=Math.max(0,state.identity+d.i);state.round++;renderStats();document.getElementById('log').textContent=d.log;flash.classList.remove('active');void flash.offsetWidth;flash.classList.add('active');emitFX(d.fatal?'fatal':resultClass==='bad-choice'?'bad':'good');if(d.fatal||state.identity<=0||state.connection>=12){setTimeout(()=>endGame('fusion'),900);return}if(resultClass==='bad-choice')sfxBad();else sfxGood();setTimeout(()=>{document.getElementById('choiceTitle').textContent=d.name;document.getElementById('choiceText').textContent=`Knowledge ${d.k>=0?'+':''}${d.k} · Connection ${d.c>=0?'+':''}${d.c} · Identity ${d.i>=0?'+':''}${d.i}`;choice.classList.add('show')},430);setTimeout(()=>{cardsEl.classList.remove('resolving');draw()},1500)}
+function pick(idx,el){if(locked||el.classList.contains('selected'))return;locked=true;current.forEach((_,i)=>{if(i!==idx)cardsEl.children[i].classList.add('disabled')});const d=current[idx];const resultClass=choiceClass(d);el.classList.add('selected',resultClass);cardsEl.classList.add('resolving');setBackgroundRandom();state.knowledge+=d.k;state.connection=Math.max(0,state.connection+d.c);state.identity=Math.max(0,state.identity+d.i);state.round++;renderStats();document.getElementById('log').textContent=d.log;flash.classList.remove('active');void flash.offsetWidth;flash.classList.add('active');emitFX(d.fatal?'fatal':resultClass==='bad-choice'?'bad':'good');if(d.fatal||state.identity<=0||state.connection>=12){setTimeout(()=>endGame('fusion'),900);return}if(resultClass==='bad-choice')sfxBad();else sfxGood();
+setTimeout(()=>{
+  document.getElementById('choiceTitle').textContent=d.name;
+  document.getElementById('choiceText').textContent=d.log;
+  const stats=document.getElementById('choiceStats');
+  stats.innerHTML='';
+  [['KNOWLEDGE',d.k],['CONNECTION',d.c],['IDENTITY',d.i]].forEach(([label,val])=>{
+    const item=document.createElement('div');
+    item.className='choice-stat '+(val>0?'positive':val<0?'negative':'neutral');
+    item.textContent=label+' '+(val>0?'+':'')+val;
+    stats.appendChild(item);
+  });
+  choice.classList.remove('hide');choice.classList.add('show');
+  const countdown=document.querySelector('#nextRound strong');
+  let left=1;countdown.textContent=left;
+  const timer=setInterval(()=>{left--;if(left<=0){clearInterval(timer);choice.classList.remove('show');choice.classList.add('hide');cardsEl.classList.add('round-leave');setTimeout(()=>{cardsEl.classList.remove('resolving','round-enter','round-leave');draw()},360)}else countdown.textContent=left},700);
+},430)}
 
 const menuScreen=document.getElementById('menuScreen'),tutorial=document.getElementById('tutorial');
 document.getElementById('startJourney').addEventListener('click',()=>{menuScreen.classList.add('hidden');locked=false;draw()});
